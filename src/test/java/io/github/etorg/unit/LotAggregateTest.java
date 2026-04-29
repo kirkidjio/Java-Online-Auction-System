@@ -9,10 +9,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.*;
 
 
 import io.github.etorg.lot.internal.domain.LotAggregate;
-import io.github.etorg.lot.internal.domain.exceptions.LotTimeOutException;
+import io.github.etorg.lot.internal.domain.BidVO;
+import io.github.etorg.lot.internal.domain.exceptions.DomainLotException;
 
 
 
@@ -42,10 +44,16 @@ public class LotAggregateTest {
 
     @Test
     public void test_lot_1_creating_lot_with_currency_and_time_and_min_bid(){
-        LotAggregate lot = lotBuilder.build();
+        LocalDateTime timeout = LocalDateTime.now().plusMonths(5);
+        LotAggregate lot = lotBuilder
+                .setCurrency("pln")
+                .setTimeOut(timeout)
+                .setMinBid(100)
+                .setState("OPEN")
+                .build();
         
         assertEquals(lot.getCurrency(), "pln", "Currency initialized");
-        assertEquals(lot.getTimeOut(),LocalDateTime.of(2026, 5,1, 10, 30), "TimeOut initialized");
+        assertEquals(lot.getTimeOut(),timeout, "TimeOut initialized");
         assertEquals(lot.getMinBid(), 100, "Min bid initialized");
         assertEquals(lot.getState(), "OPEN", "Start state is OPEN");
     }
@@ -53,22 +61,62 @@ public class LotAggregateTest {
     @Test 
     public void test_lot_1_creating_lot_with_timeout_earlier_then_current_time_FAIL(){
         
-        assertThrows(LotTimeOutException.class, () -> {lotBuilder.setTimeOut(LocalDateTime.of(2025, 5,1, 10, 30)).build();}, "Earlier then current time");
-        assertThrows(LotTimeOutException.class, () -> {lotBuilder.setTimeOut(LocalDateTime.of(2027, 5,1, 10, 30)).build();}, "Later then current time plus 6 month");
+        assertThrows(DomainLotException.class, () -> {lotBuilder.setTimeOut(LocalDateTime.of(2025, 5,1, 10, 30)).build();}, "Earlier then current time");
+        assertThrows(DomainLotException.class, () -> {lotBuilder.setTimeOut(LocalDateTime.of(2027, 5,1, 10, 30)).build();}, "Later then current time plus 6 month");
     }
     
     @Test
     public void test_lot_2_making_bid_with_open_state(){
-        LotAggregate lot = lotBuilder.setMinBid(100).build();  // start state is OPEN
+        LotAggregate lot = lotBuilder.setMinBid(100).setCurrency("pln").build();  // start state is OPEN
         BidVO bid = new BidVO("buyer", "pln", 150);
         
         lot.makeBid(bid);
         
         assertTrue(lot.getBids().contains(bid), "Bid is accepted");
         
-        
-        
     }
     
+    @Test
+    public void test_lot_2_making_bid_with_not_open_state_FAIL(){
+        LotAggregate lot = lotBuilder.setMinBid(100).setState("CLOSE").build();  
+        BidVO bid = new BidVO("buyer", "pln", 150);
+        
+        
+        assertThrows(DomainLotException.class, () -> {lot.makeBid(bid);});
+    }
     
+    @Test 
+    public void test_lot_2_making_bid_with_currency_another_then_lot_FAIL(){
+        LotAggregate lot = lotBuilder.setMinBid(100).setCurrency("usd").build();  
+        BidVO bid = new BidVO("buyer", "pln", 150);
+        
+        
+        assertThrows(DomainLotException.class, () -> {lot.makeBid(bid);});
+    }
+    
+    @Test
+    public void test_lot_2_making_bid_when_bid_less_then_minimal_bid_FAIL(){
+        LotAggregate lot = lotBuilder.setMinBid(200).setCurrency("pln").build();  
+        BidVO bid = new BidVO("buyer", "pln", 150);
+        
+        
+        assertThrows(DomainLotException.class, () -> {lot.makeBid(bid);});
+    }
+    
+    @Test
+    public void test_lot_2_making_bid_when_bid_less_then_maximum_bid_FAIL(){
+        BidVO maxBid = new BidVO("user", "pln", 300);
+        ArrayList<BidVO> bids = new ArrayList<>();
+        bids.add(maxBid);
+        LotAggregate lot = lotBuilder
+                .setMinBid(200)
+                .setCurrency("pln")
+                .setBids(bids)
+                .build();
+        
+        BidVO bid = new BidVO("buyer", "pln", 250);
+        
+        
+        assertThrows(DomainLotException.class, () -> {lot.makeBid(bid);});
+    }
 }

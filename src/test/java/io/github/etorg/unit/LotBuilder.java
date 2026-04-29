@@ -2,6 +2,9 @@ package io.github.etorg.unit;
 
 import java.time.LocalDateTime;
 import io.github.etorg.lot.internal.domain.LotAggregate;
+import io.github.etorg.lot.internal.domain.BidVO;
+
+import java.util.*;
 
 
 public class LotBuilder {
@@ -11,14 +14,16 @@ public class LotBuilder {
     private int minBid;
     private String currency;
     private String state; 
+    private ArrayList<BidVO> bids;
     
     public LotBuilder(){
         this.id = "lot";
-        this.timeout = LocalDateTime.of(2026, 5,1, 10, 30);
+        this.timeout = LocalDateTime.of(2026, 10,1, 10, 30);
         this.minBid = 100;
         this.currency = "pln";
         this.state = "OPEN";
         this.ownerId = "owner";
+        this.bids = new ArrayList<>();
     }
     
     public LotBuilder setId(String id){
@@ -51,8 +56,13 @@ public class LotBuilder {
         return this;
     }
     
+    public LotBuilder setBids(ArrayList<BidVO> bids){
+        this.bids = bids;
+        return this;
+    }
+    
     public LotAggregate build(){
-        return new LotAggregate(id,ownerId, currency, timeout, minBid);
+        return new LotAggregate(id,ownerId, currency, timeout, minBid, state, bids);
     }
     
     
