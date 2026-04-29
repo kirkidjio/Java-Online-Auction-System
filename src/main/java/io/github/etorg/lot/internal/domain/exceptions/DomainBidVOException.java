@@ -8,6 +8,6 @@ package io.github.etorg.lot.internal.domain.exceptions;
  *
  * @author 777
  */
-public class LotTimeOutException extends RuntimeException{
+public class DomainBidVOException extends RuntimeException {
     
 }
