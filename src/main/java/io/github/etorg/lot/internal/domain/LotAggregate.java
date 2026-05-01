@@ -42,14 +42,43 @@ public class LotAggregate {
         this.ownerId = ownerId;
         this.bids = bids;
         this.bids.sort(null);
-        
-        if (timeout.isBefore(LocalDateTime.now()) || timeout.isAfter(LocalDateTime.now().plusMonths(6))){
-            throw new DomainLotException("TimeOut cant be earlier then now");
-        }
-        
-        // if (timeout.isBefore(LocalDateTime.now()) && state.equals("OPEN"))
-        
         this.state = state;
+        
+        
+        if (timeout.isBefore(LocalDateTime.now()) && state.equals("OPEN") && !bids.isEmpty()){close(); updates.add(new LotClosedEvent(id, bids.getLast().buyerId(), "TIMEOUT"));}
+        if (timeout.isBefore(LocalDateTime.now()) && state.equals("OPEN") && bids.isEmpty()) {draw(); updates.add(new LotDrawedEvent(id, "TIMEOUT"));}
+        
+        
+    }
+    
+    private void close(){
+        if (!state.equals("OPEN")) throw new DomainLotException("Lot cant be closed when lot status is not OPEN");
+        if (bids.isEmpty()) throw new DomainLotException("Lot cant be closed when lot havent bids");
+        
+        state = "CLOSE";
+        
+        
+    }
+    
+    private void draw(){
+        if (!state.equals("OPEN")) throw new DomainLotException("Lot cant be closed when lot status is not OPEN");
+        
+        state = "DRAW";
+        
+        
+    }
+    
+    public void drawByOwner(String user){
+        if (!ownerId.equals(user)) throw new DomainLotException("Permission denied for drawing lot");
+        draw();
+        updates.add(new LotDrawedEvent(id, "OWNER"));
+        
+    }
+    
+    public void closeByOwner(String user){
+        if (!ownerId.equals(user)) throw new DomainLotException("Permission denied for closing lot");
+        close();
+        updates.add(new LotClosedEvent(id, bids.getLast().buyerId(), "OWNER"));
         
     }
     
@@ -68,6 +97,7 @@ public class LotAggregate {
     }
     
     // GETTERS
+    public String getId() {return id;}
     public LocalDateTime getTimeOut() {return timeout;}
     public int getMinBid() {return minBid;}
     public String getCurrency() {return currency;}
