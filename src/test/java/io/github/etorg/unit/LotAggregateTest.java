@@ -15,6 +15,7 @@ import java.util.*;
 import io.github.etorg.lot.internal.domain.LotAggregate;
 import io.github.etorg.lot.internal.domain.BidVO;
 import io.github.etorg.lot.internal.domain.exceptions.DomainLotException;
+import io.github.etorg.lot.internal.domain.events.*;
 
 
 
@@ -45,12 +46,7 @@ public class LotAggregateTest {
     @Test
     public void test_lot_1_creating_lot_with_currency_and_time_and_min_bid(){
         LocalDateTime timeout = LocalDateTime.now().plusMonths(5);
-        LotAggregate lot = lotBuilder
-                .setCurrency("pln")
-                .setTimeOut(timeout)
-                .setMinBid(100)
-                .setState("OPEN")
-                .build();
+        LotAggregate lot = new LotAggregate("lot", "user1", "pln", timeout, 100);
         
         assertEquals(lot.getCurrency(), "pln", "Currency initialized");
         assertEquals(lot.getTimeOut(),timeout, "TimeOut initialized");
@@ -60,9 +56,12 @@ public class LotAggregateTest {
     
     @Test 
     public void test_lot_1_creating_lot_with_timeout_earlier_then_current_time_FAIL(){
+        LocalDateTime timeoutLate = LocalDateTime.now().plusMonths(7);
+        LocalDateTime timeoutEarly = LocalDateTime.now().minusDays(1);
         
-        assertThrows(DomainLotException.class, () -> {lotBuilder.setTimeOut(LocalDateTime.of(2025, 5,1, 10, 30)).build();}, "Earlier then current time");
-        assertThrows(DomainLotException.class, () -> {lotBuilder.setTimeOut(LocalDateTime.of(2027, 5,1, 10, 30)).build();}, "Later then current time plus 6 month");
+        
+        assertThrows(DomainLotException.class, () -> {new LotAggregate("lot", "user1", "pln", timeoutLate, 100);}, "Setted timeout earlier then current time");
+        assertThrows(DomainLotException.class, () -> {new LotAggregate("lot", "user1", "pln", timeoutEarly, 100);}, "Setted timeout later then current time plus 6 month");
     }
     
     @Test
@@ -118,5 +117,94 @@ public class LotAggregateTest {
         
         
         assertThrows(DomainLotException.class, () -> {lot.makeBid(bid);});
+    }
+    
+    @Test
+    public void test_lot_3_lot_must_be_initialized_with_closed_status_when_timeout(){
+        BidVO maxBid = new BidVO("user", "pln", 300);
+        ArrayList<BidVO> bids = new ArrayList<>();
+        bids.add(maxBid);
+        LotAggregate lot = lotBuilder
+                .setTimeOut(LocalDateTime.now().minusSeconds(5))
+                .setBids(bids)
+                .build();
+        
+        assertEquals(lot.getState(), "CLOSE");
+        assertTrue(lot.getUpdates().contains(new LotClosedEvent(lot.getId(),maxBid.buyerId() ,"TIMEOUT")));
+        
+    }
+    
+    @Test
+    public void test_lot_3_closing_lot_by_owner(){
+        BidVO maxBid = new BidVO("user", "pln", 300);
+        ArrayList<BidVO> bids = new ArrayList<>();
+        bids.add(maxBid);
+        LotAggregate lot = lotBuilder
+                .setTimeOut(LocalDateTime.now().plusDays(5))
+                .setBids(bids)
+                .build();
+        
+        lot.closeByOwner("owner");
+        
+        assertEquals(lot.getState(), "CLOSE");
+        assertTrue(lot.getUpdates().contains(new LotClosedEvent(lot.getId(), maxBid.buyerId() ,"OWNER")));
+    }
+    
+    @Test
+    public void test_lot_3_closing_lot_by_NOT_owner_FAIL(){
+        BidVO maxBid = new BidVO("user", "pln", 300);
+        ArrayList<BidVO> bids = new ArrayList<>();
+        bids.add(maxBid);
+        LotAggregate lot = lotBuilder
+                .setTimeOut(LocalDateTime.now().plusDays(5))
+                .setBids(bids)
+                .build();
+        
+        
+        
+        assertThrows(DomainLotException.class, () -> {lot.closeByOwner("not_owner");});
+    }
+    
+    @Test
+    public void test_lot_3_drawing_lot_by_owner(){
+        BidVO maxBid = new BidVO("user", "pln", 300);
+        ArrayList<BidVO> bids = new ArrayList<>();
+        bids.add(maxBid);
+        LotAggregate lot = lotBuilder
+                .setTimeOut(LocalDateTime.now().plusDays(5))
+                .setBids(bids)
+                .build();
+        
+        lot.drawByOwner("owner");
+        
+        assertEquals(lot.getState(), "DRAW");
+        assertTrue(lot.getUpdates().contains(new LotDrawedEvent(lot.getId(), "OWNER")));
+    }
+    
+    @Test
+    public void test_lot_3_drawing_lot_by_NOT_owner_FAIL(){
+        BidVO maxBid = new BidVO("user", "pln", 300);
+        ArrayList<BidVO> bids = new ArrayList<>();
+        bids.add(maxBid);
+        LotAggregate lot = lotBuilder
+                .setTimeOut(LocalDateTime.now().plusDays(5))
+                .setBids(bids)
+                .build();
+        
+        lot.drawByOwner("owner");
+        
+        assertThrows(DomainLotException.class, () -> {lot.drawByOwner("not_owner");});
+    }
+    
+    
+    @Test
+    public void test_lot_3_lot_must_be_initialized_with_drawed_status_when_timeout_and_no_bids(){
+        LotAggregate lot = lotBuilder
+                .setTimeOut(LocalDateTime.now().minusSeconds(5))
+                .build();
+        
+        assertEquals(lot.getState(), "DRAW");
+        assertTrue(lot.getUpdates().contains(new LotDrawedEvent(lot.getId(), "TIMEOUT")));
+        
     }
 }
