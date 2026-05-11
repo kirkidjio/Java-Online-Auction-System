@@ -1,10 +1,13 @@
 package io.github.etorg.lot.internal.domain;
 
+import java.util.UUID;
+
 import io.github.etorg.lot.internal.domain.exceptions.DomainBidVOException;
 
-public record BidVO(String buyerId, String currency, int value) implements Comparable<BidVO> {
+public record BidVO(UUID id ,UUID buyerId, String currency, int value) implements Comparable<BidVO> {
     
-    public BidVO(String buyerId, String currency, int value){
+    public BidVO(UUID id ,UUID buyerId, String currency, int value){
+    	this.id = id;
         this.buyerId = buyerId;
         if (value <= 0) throw new DomainBidVOException();
         this.value = value;

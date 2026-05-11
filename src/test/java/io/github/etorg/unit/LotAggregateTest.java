@@ -45,8 +45,11 @@ public class LotAggregateTest {
 
     @Test
     public void test_lot_1_creating_lot_with_currency_and_time_and_min_bid(){
+    	UUID lotId = UUID.randomUUID();
+    	UUID ownerId = UUID.randomUUID();
+    	
         LocalDateTime timeout = LocalDateTime.now().plusMonths(5);
-        LotAggregate lot = new LotAggregate("lot", "user1", "pln", timeout, 100);
+        LotAggregate lot = new LotAggregate(lotId, ownerId, "pln", timeout, "bebra" ,100);
         
         assertEquals(lot.getCurrency(), "pln", "Currency initialized");
         assertEquals(lot.getTimeOut(),timeout, "TimeOut initialized");
@@ -56,18 +59,21 @@ public class LotAggregateTest {
     
     @Test 
     public void test_lot_1_creating_lot_with_timeout_earlier_then_current_time_FAIL(){
+    	UUID lotId = UUID.randomUUID();
+    	UUID ownerId = UUID.randomUUID();
+    	
         LocalDateTime timeoutLate = LocalDateTime.now().plusMonths(7);
         LocalDateTime timeoutEarly = LocalDateTime.now().minusDays(1);
         
         
-        assertThrows(DomainLotException.class, () -> {new LotAggregate("lot", "user1", "pln", timeoutLate, 100);}, "Setted timeout earlier then current time");
-        assertThrows(DomainLotException.class, () -> {new LotAggregate("lot", "user1", "pln", timeoutEarly, 100);}, "Setted timeout later then current time plus 6 month");
+        assertThrows(DomainLotException.class, () -> {new LotAggregate(lotId, ownerId, "pln", timeoutLate, "bebra" ,100);}, "Setted timeout earlier then current time");
+        assertThrows(DomainLotException.class, () -> {new LotAggregate(lotId, ownerId, "pln", timeoutEarly, "bebra" ,100);}, "Setted timeout later then current time plus 6 month");
     }
     
     @Test
     public void test_lot_2_making_bid_with_open_state(){
         LotAggregate lot = lotBuilder.setMinBid(100).setCurrency("pln").build();  // start state is OPEN
-        BidVO bid = new BidVO("buyer", "pln", 150);
+        BidVO bid = new BidVO(UUID.randomUUID() ,UUID.randomUUID(), "pln", 150);
         
         lot.makeBid(bid);
         
@@ -78,7 +84,7 @@ public class LotAggregateTest {
     @Test
     public void test_lot_2_making_bid_with_not_open_state_FAIL(){
         LotAggregate lot = lotBuilder.setMinBid(100).setState("CLOSE").build();  
-        BidVO bid = new BidVO("buyer", "pln", 150);
+        BidVO bid = new BidVO(UUID.randomUUID() ,UUID.randomUUID(), "pln", 150);
         
         
         assertThrows(DomainLotException.class, () -> {lot.makeBid(bid);});
@@ -87,7 +93,7 @@ public class LotAggregateTest {
     @Test 
     public void test_lot_2_making_bid_with_currency_another_then_lot_FAIL(){
         LotAggregate lot = lotBuilder.setMinBid(100).setCurrency("usd").build();  
-        BidVO bid = new BidVO("buyer", "pln", 150);
+        BidVO bid = new BidVO(UUID.randomUUID() ,UUID.randomUUID(), "pln", 150);
         
         
         assertThrows(DomainLotException.class, () -> {lot.makeBid(bid);});
@@ -96,7 +102,7 @@ public class LotAggregateTest {
     @Test
     public void test_lot_2_making_bid_when_bid_less_then_minimal_bid_FAIL(){
         LotAggregate lot = lotBuilder.setMinBid(200).setCurrency("pln").build();  
-        BidVO bid = new BidVO("buyer", "pln", 150);
+        BidVO bid = new BidVO(UUID.randomUUID() ,UUID.randomUUID(), "pln", 150);
         
         
         assertThrows(DomainLotException.class, () -> {lot.makeBid(bid);});
@@ -104,7 +110,7 @@ public class LotAggregateTest {
     
     @Test
     public void test_lot_2_making_bid_when_bid_less_then_maximum_bid_FAIL(){
-        BidVO maxBid = new BidVO("user", "pln", 300);
+        BidVO maxBid = new BidVO(UUID.randomUUID() ,UUID.randomUUID(), "pln", 300);
         ArrayList<BidVO> bids = new ArrayList<>();
         bids.add(maxBid);
         LotAggregate lot = lotBuilder
@@ -113,7 +119,7 @@ public class LotAggregateTest {
                 .setBids(bids)
                 .build();
         
-        BidVO bid = new BidVO("buyer", "pln", 250);
+        BidVO bid = new BidVO(UUID.randomUUID() ,UUID.randomUUID(), "pln", 250);
         
         
         assertThrows(DomainLotException.class, () -> {lot.makeBid(bid);});
@@ -121,7 +127,7 @@ public class LotAggregateTest {
     
     @Test
     public void test_lot_3_lot_must_be_initialized_with_closed_status_when_timeout(){
-        BidVO maxBid = new BidVO("user", "pln", 300);
+        BidVO maxBid = new BidVO(UUID.randomUUID() ,UUID.randomUUID(), "pln", 300);
         ArrayList<BidVO> bids = new ArrayList<>();
         bids.add(maxBid);
         LotAggregate lot = lotBuilder
@@ -136,7 +142,7 @@ public class LotAggregateTest {
     
     @Test
     public void test_lot_3_closing_lot_by_owner(){
-        BidVO maxBid = new BidVO("user", "pln", 300);
+        BidVO maxBid = new BidVO(UUID.randomUUID() ,UUID.randomUUID(), "pln", 300);
         ArrayList<BidVO> bids = new ArrayList<>();
         bids.add(maxBid);
         LotAggregate lot = lotBuilder
@@ -144,7 +150,7 @@ public class LotAggregateTest {
                 .setBids(bids)
                 .build();
         
-        lot.closeByOwner("owner");
+        lot.closeByOwner(lot.getOwnerId());
         
         assertEquals(lot.getState(), "CLOSE");
         assertTrue(lot.getUpdates().contains(new LotClosedEvent(lot.getId(), maxBid.buyerId() ,"OWNER")));
@@ -152,7 +158,7 @@ public class LotAggregateTest {
     
     @Test
     public void test_lot_3_closing_lot_by_NOT_owner_FAIL(){
-        BidVO maxBid = new BidVO("user", "pln", 300);
+        BidVO maxBid = new BidVO(UUID.randomUUID() ,UUID.randomUUID(), "pln", 300);
         ArrayList<BidVO> bids = new ArrayList<>();
         bids.add(maxBid);
         LotAggregate lot = lotBuilder
@@ -162,12 +168,12 @@ public class LotAggregateTest {
         
         
         
-        assertThrows(DomainLotException.class, () -> {lot.closeByOwner("not_owner");});
+        assertThrows(DomainLotException.class, () -> {lot.closeByOwner(UUID.randomUUID());});
     }
     
     @Test
-    public void test_lot_3_drawing_lot_by_owner(){
-        BidVO maxBid = new BidVO("user", "pln", 300);
+    public void test_lot_4_drawing_lot_by_owner(){
+        BidVO maxBid = new BidVO(UUID.randomUUID() ,UUID.randomUUID(), "pln", 300);
         ArrayList<BidVO> bids = new ArrayList<>();
         bids.add(maxBid);
         LotAggregate lot = lotBuilder
@@ -175,15 +181,15 @@ public class LotAggregateTest {
                 .setBids(bids)
                 .build();
         
-        lot.drawByOwner("owner");
+        lot.drawByOwner(lot.getOwnerId());
         
         assertEquals(lot.getState(), "DRAW");
         assertTrue(lot.getUpdates().contains(new LotDrawedEvent(lot.getId(), "OWNER")));
     }
     
     @Test
-    public void test_lot_3_drawing_lot_by_NOT_owner_FAIL(){
-        BidVO maxBid = new BidVO("user", "pln", 300);
+    public void test_lot_4_drawing_lot_by_NOT_owner_FAIL(){
+        BidVO maxBid = new BidVO(UUID.randomUUID() ,UUID.randomUUID(), "pln", 300);
         ArrayList<BidVO> bids = new ArrayList<>();
         bids.add(maxBid);
         LotAggregate lot = lotBuilder
@@ -191,14 +197,14 @@ public class LotAggregateTest {
                 .setBids(bids)
                 .build();
         
-        lot.drawByOwner("owner");
         
-        assertThrows(DomainLotException.class, () -> {lot.drawByOwner("not_owner");});
+        
+        assertThrows(DomainLotException.class, () -> {lot.drawByOwner(UUID.randomUUID());});
     }
     
     
     @Test
-    public void test_lot_3_lot_must_be_initialized_with_drawed_status_when_timeout_and_no_bids(){
+    public void test_lot_4_lot_must_be_initialized_with_drawed_status_when_timeout_and_no_bids(){
         LotAggregate lot = lotBuilder
                 .setTimeOut(LocalDateTime.now().minusSeconds(5))
                 .build();

@@ -2,23 +2,26 @@ package io.github.etorg.lot.internal.domain;
 
 import java.time.LocalDateTime;
 import io.github.etorg.lot.internal.domain.exceptions.DomainLotException;
+import lombok.Builder;
 import io.github.etorg.lot.internal.domain.events.*;
-import java.util.stream.IntStream;
+
 
 import java.util.*;
 
 public class LotAggregate {
-    private String id;
-    private String ownerId;
+    private UUID id;
+    private UUID ownerId;
     private LocalDateTime timeout;
     private int minBid;
     private String currency;
     private String state;
-    private ArrayList<BidVO> bids;
+    private String description;
+    private List<BidVO> bids;
     private ArrayList<Event> updates = new ArrayList<>();
     
     
-    public LotAggregate(String id, String ownerId, String currency,LocalDateTime timeout, int minBid){
+    
+    public LotAggregate(UUID id, UUID ownerId, String currency,LocalDateTime timeout, String description ,int minBid){
         this.id = id;
         this.timeout = timeout;
         this.minBid = minBid;
@@ -26,6 +29,7 @@ public class LotAggregate {
         this.state = "OPEN";
         this.ownerId = ownerId;
         this.bids = new ArrayList<>();
+        this.description = description;
         
         if (timeout.isBefore(LocalDateTime.now()) || timeout.isAfter(LocalDateTime.now().plusMonths(6))){
             throw new DomainLotException("TimeOut cant be earlier then now");
@@ -33,7 +37,8 @@ public class LotAggregate {
         
     }
     
-    public LotAggregate(String id, String ownerId, String currency,LocalDateTime timeout, int minBid, String state, ArrayList<BidVO> bids){
+    @Builder
+    public LotAggregate(UUID id, UUID ownerId, String currency,LocalDateTime timeout, int minBid, String state, List<BidVO> bids, String description){
         this.id = id;
         this.timeout = timeout;
         this.minBid = minBid;
@@ -43,6 +48,7 @@ public class LotAggregate {
         this.bids = bids;
         this.bids.sort(null);
         this.state = state;
+        this.description = description;
         
         
         if (timeout.isBefore(LocalDateTime.now()) && state.equals("OPEN") && !bids.isEmpty()){close(); updates.add(new LotClosedEvent(id, bids.getLast().buyerId(), "TIMEOUT"));}
@@ -68,14 +74,14 @@ public class LotAggregate {
         
     }
     
-    public void drawByOwner(String user){
+    public void drawByOwner(UUID user){
         if (!ownerId.equals(user)) throw new DomainLotException("Permission denied for drawing lot");
         draw();
         updates.add(new LotDrawedEvent(id, "OWNER"));
         
     }
     
-    public void closeByOwner(String user){
+    public void closeByOwner(UUID user){
         if (!ownerId.equals(user)) throw new DomainLotException("Permission denied for closing lot");
         close();
         updates.add(new LotClosedEvent(id, bids.getLast().buyerId(), "OWNER"));
@@ -97,12 +103,13 @@ public class LotAggregate {
     }
     
     // GETTERS
-    public String getId() {return id;}
+    public UUID getId() {return id;}
     public LocalDateTime getTimeOut() {return timeout;}
     public int getMinBid() {return minBid;}
     public String getCurrency() {return currency;}
     public String getState() {return state;}
-    public String getOwnerId(){return ownerId; }
+    public UUID getOwnerId(){return ownerId; }
     public ArrayList<BidVO> getBids() {return new ArrayList<>(bids);}
+    public String getDescription() {return description;}
     public ArrayList<Event> getUpdates() {return new ArrayList<>(updates);}
 }

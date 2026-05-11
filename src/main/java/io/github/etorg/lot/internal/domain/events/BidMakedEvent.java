@@ -1,10 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Record.java to edit this template
- */
 package io.github.etorg.lot.internal.domain.events;
+import java.util.UUID;
 
-
-public record BidMakedEvent(String lotId, String userId, int value) implements Event {
+public record BidMakedEvent(UUID lotId, UUID userId, int value) implements Event {
 
 }

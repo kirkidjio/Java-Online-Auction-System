@@ -1,6 +1,7 @@
 package io.github.etorg.lot.internal.domain.events;
 
+import java.util.UUID;
 
-public record LotDrawedEvent(String lotId, String reason) implements Event {
-
+public record LotDrawedEvent(UUID lotId, String reason) implements Event {
+    
 }
