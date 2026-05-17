@@ -12,7 +12,7 @@ public class LotAggregate {
     private UUID id;
     private UUID ownerId;
     private LocalDateTime timeout;
-    private int minBid;
+    private double minBid;
     private String currency;
     private String state;
     private String description;
@@ -41,12 +41,12 @@ public class LotAggregate {
     public LotAggregate(UUID id, UUID ownerId, String currency,LocalDateTime timeout, int minBid, String state, List<BidVO> bids, String description){
         this.id = id;
         this.timeout = timeout;
-        this.minBid = minBid;
+        this.minBid = bids.isEmpty() ? minBid : Collections.max(bids).value();
         this.currency = currency;
         
         this.ownerId = ownerId;
         this.bids = bids;
-        this.bids.sort(null);
+        
         this.state = state;
         this.description = description;
         
@@ -84,18 +84,18 @@ public class LotAggregate {
     public void closeByOwner(UUID user){
         if (!ownerId.equals(user)) throw new DomainLotException("Permission denied for closing lot");
         close();
-        updates.add(new LotClosedEvent(id, bids.getLast().buyerId(), "OWNER"));
-        
+        updates.add(new LotClosedEvent(id, Collections.max(bids).buyerId(), "OWNER"));
     }
     
     public void makeBid(BidVO bid) {
         if (!state.equals("OPEN")) throw new DomainLotException("Bid cant be maked when lot status is not OPEN");
         if (!bid.currency().equals(currency)) throw new DomainLotException("Bid currency must be the same as lot currency");
-    	if (bids.isEmpty() && bid.value() < minBid) throw new DomainLotException("Bid cant be less then minimal allowed");
-        if (!bids.isEmpty()){
-            if (bids.getLast().value()*1.05 > bid.value()) throw new DomainLotException("Bid cant be less then maximum bid");
-        }
+    	if (bid.value() < minBid) throw new DomainLotException("Bid cant be less then minimal allowed");
+        
+        
+        
         bids.add(bid);
+        minBid =  bid.value() * 1.05 ; 
         updates.add(new BidMakedEvent(id, bid.buyerId(), bid.value()));
         
         
@@ -105,7 +105,7 @@ public class LotAggregate {
     // GETTERS
     public UUID getId() {return id;}
     public LocalDateTime getTimeOut() {return timeout;}
-    public int getMinBid() {return minBid;}
+    public double getMinBid() {return minBid;}
     public String getCurrency() {return currency;}
     public String getState() {return state;}
     public UUID getOwnerId(){return ownerId; }
