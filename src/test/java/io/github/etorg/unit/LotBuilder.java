@@ -1,7 +1,9 @@
 package io.github.etorg.unit;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import io.github.etorg.lot.internal.domain.LotAggregate;
+import io.github.etorg.lot.internal.domain.StatusEnum;
 import io.github.etorg.lot.internal.domain.BidVO;
 
 import java.util.*;
@@ -11,18 +13,19 @@ public class LotBuilder {
     private UUID id;
     private UUID ownerId;
     private LocalDateTime timeout;
-    private int minBid;
+    private BigDecimal minBid;
     private String currency;
-    private String state; 
+    private StatusEnum state; 
     private List<BidVO> bids;
     private String description = "123";
+    private String title = "test";
     
     public LotBuilder(){
         this.id = UUID.randomUUID();
         this.timeout = LocalDateTime.of(2026, 10,1, 10, 30);
-        this.minBid = 100;
+        this.minBid = BigDecimal.valueOf(100);
         this.currency = "pln";
-        this.state = "OPEN";
+        this.state = StatusEnum.OPEN;
         this.ownerId = UUID.randomUUID();
         this.bids = new ArrayList<>();
     }
@@ -37,7 +40,7 @@ public class LotBuilder {
         return this;
     }
     
-    public LotBuilder setMinBid(int minBid){
+    public LotBuilder setMinBid(BigDecimal minBid){
         this.minBid = minBid;
         return this;
     }
@@ -47,7 +50,7 @@ public class LotBuilder {
         return this;
     }
     
-    public LotBuilder setState(String state){
+    public LotBuilder setState(StatusEnum state){
         this.state = state;
         return this;
     }
@@ -68,7 +71,7 @@ public class LotBuilder {
     }
     
     public LotAggregate build(){
-        return new LotAggregate(id,ownerId, currency, timeout, minBid, state, bids, description);
+        return new LotAggregate(id,ownerId, currency, timeout, minBid, state, bids, description, title);
     }
     
     

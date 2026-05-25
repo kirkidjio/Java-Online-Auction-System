@@ -2,7 +2,7 @@ package io.github.etorg.lot.internal.domain;
 
 public enum StatusEnum {
 	OPEN,
-	CLOSE,
+	CLOSED,
 	DRAW,
 	NOT_ACTIVATED
 }

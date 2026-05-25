@@ -1,35 +1,38 @@
 package io.github.etorg.lot.internal.domain;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import io.github.etorg.lot.internal.domain.exceptions.DomainLotException;
 import lombok.Builder;
-import io.github.etorg.lot.internal.domain.events.*;
+import io.github.etorg.lot.api.events.*;
 
 
 import java.util.*;
 
 public class LotAggregate {
     private UUID id;
+    private String title;
     private UUID ownerId;
     private LocalDateTime timeout;
-    private double minBid;
+    private BigDecimal minBid;
     private String currency;
-    private String state;
+    private StatusEnum state;
     private String description;
     private List<BidVO> bids;
     private ArrayList<Event> updates = new ArrayList<>();
     
     
     
-    public LotAggregate(UUID id, UUID ownerId, String currency,LocalDateTime timeout, String description ,int minBid){
+    public LotAggregate(UUID id, UUID ownerId, String currency,LocalDateTime timeout, String description ,BigDecimal minBid, String title){
         this.id = id;
         this.timeout = timeout;
         this.minBid = minBid;
         this.currency = currency;
-        this.state = "OPEN";
+        this.state = StatusEnum.OPEN;
         this.ownerId = ownerId;
         this.bids = new ArrayList<>();
         this.description = description;
+        this.title = title;
         
         if (timeout.isBefore(LocalDateTime.now()) || timeout.isAfter(LocalDateTime.now().plusMonths(6))){
             throw new DomainLotException("TimeOut cant be earlier then now");
@@ -38,7 +41,7 @@ public class LotAggregate {
     }
     
     @Builder
-    public LotAggregate(UUID id, UUID ownerId, String currency,LocalDateTime timeout, int minBid, String state, List<BidVO> bids, String description){
+    public LotAggregate(UUID id, UUID ownerId, String currency,LocalDateTime timeout, BigDecimal minBid, StatusEnum state, List<BidVO> bids, String description, String title){
         this.id = id;
         this.timeout = timeout;
         this.minBid = bids.isEmpty() ? minBid : Collections.max(bids).value();
@@ -49,54 +52,66 @@ public class LotAggregate {
         
         this.state = state;
         this.description = description;
-        
-        
-        if (timeout.isBefore(LocalDateTime.now()) && state.equals("OPEN") && !bids.isEmpty()){close(); updates.add(new LotClosedEvent(id, bids.getLast().buyerId(), "TIMEOUT"));}
-        if (timeout.isBefore(LocalDateTime.now()) && state.equals("OPEN") && bids.isEmpty()) {draw(); updates.add(new LotDrawedEvent(id, "TIMEOUT"));}
-        
+        this.title = title;
         
     }
     
-    private void close(){
-        if (!state.equals("OPEN")) throw new DomainLotException("Lot cant be closed when lot status is not OPEN");
+    private boolean isTimeout() {
+    	if (timeout.isBefore(LocalDateTime.now())){
+    		return true;
+    	}
+    	return false;
+    }
+    
+    private void close(String reason){
+        if (!state.equals(StatusEnum.OPEN)) throw new DomainLotException("Lot cant be closed when lot status is not OPEN");
         if (bids.isEmpty()) throw new DomainLotException("Lot cant be closed when lot havent bids");
         
-        state = "CLOSE";
+        state = StatusEnum.CLOSED;
+        updates.add(new LotClosedEvent(id, Collections.max(bids).buyerId(), reason));
         
         
     }
     
-    private void draw(){
-        if (!state.equals("OPEN")) throw new DomainLotException("Lot cant be closed when lot status is not OPEN");
+    private void draw(String reason){
+        if (!state.equals(StatusEnum.OPEN)) throw new DomainLotException("Lot cant be drawed when lot status is not OPEN");
         
-        state = "DRAW";
-        
+        state = StatusEnum.DRAW;
+        updates.add(new LotDrawedEvent(id, reason));
         
     }
     
     public void drawByOwner(UUID user){
+    	if (isTimeout()) throw new DomainLotException("Lot cant be drawed by user when timeout");
         if (!ownerId.equals(user)) throw new DomainLotException("Permission denied for drawing lot");
-        draw();
-        updates.add(new LotDrawedEvent(id, "OWNER"));
-        
+        draw("OWNER");
     }
     
     public void closeByOwner(UUID user){
+    	if (isTimeout()) throw new DomainLotException("Lot cant be close by user when timeout");
         if (!ownerId.equals(user)) throw new DomainLotException("Permission denied for closing lot");
-        close();
-        updates.add(new LotClosedEvent(id, Collections.max(bids).buyerId(), "OWNER"));
+        close("OWNER");
+        
+    }
+    
+    public void changeStateAfterTimeout() {
+    	if (isTimeout()) {
+    		if (bids.isEmpty()) draw("TIMEOUT");
+    		else close("TIMEOUT");
+    	}
     }
     
     public void makeBid(BidVO bid) {
-        if (!state.equals("OPEN")) throw new DomainLotException("Bid cant be maked when lot status is not OPEN");
+    	if (isTimeout()) throw new DomainLotException("Bid cant be made when timeout");
+        if (!state.equals(StatusEnum.OPEN)) throw new DomainLotException("Bid cant be made when lot status is not OPEN");
         if (!bid.currency().equals(currency)) throw new DomainLotException("Bid currency must be the same as lot currency");
-    	if (bid.value() < minBid) throw new DomainLotException("Bid cant be less then minimal allowed");
+    	if (bid.value().compareTo(minBid) == -1) throw new DomainLotException("Bid cant be less then minimal allowed");
         
         
         
         bids.add(bid);
-        minBid =  bid.value() * 1.05 ; 
-        updates.add(new BidMakedEvent(id, bid.buyerId(), bid.value()));
+        minBid = bid.value().multiply(BigDecimal.valueOf(1.05)); 
+        updates.add(new BidMakedEvent(id, bid.buyerId(), bid.value(), bid.currency()));
         
         
     	
@@ -105,11 +120,12 @@ public class LotAggregate {
     // GETTERS
     public UUID getId() {return id;}
     public LocalDateTime getTimeOut() {return timeout;}
-    public double getMinBid() {return minBid;}
+    public BigDecimal getMinBid() {return minBid;}
     public String getCurrency() {return currency;}
-    public String getState() {return state;}
+    public StatusEnum getState() {return state;}
     public UUID getOwnerId(){return ownerId; }
     public ArrayList<BidVO> getBids() {return new ArrayList<>(bids);}
     public String getDescription() {return description;}
     public ArrayList<Event> getUpdates() {return new ArrayList<>(updates);}
+    public String getTitle() {return title;}
 }
