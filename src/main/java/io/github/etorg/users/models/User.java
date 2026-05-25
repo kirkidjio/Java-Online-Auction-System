@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
@@ -39,9 +40,12 @@ public class User implements UserDetails {
 	@Column (name="password", unique = true)
 	private String password;
 	
+	@Column (name="role", columnDefinition = "varchar(100) default 'ROLE_USER'")
+	private String role;
+	
 	@Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority(role));
     }
 
 

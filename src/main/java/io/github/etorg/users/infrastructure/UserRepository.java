@@ -12,4 +12,6 @@ import io.github.etorg.users.models.User;
 public interface UserRepository extends CrudRepository<User, UUID> {
 	Optional<User> findByEmail(String email);
 	Optional<User> findById(UUID id);
+	Optional<User> findByUsername(String name);
+	void deleteByUsername(String name);
 }
