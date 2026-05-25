@@ -54,7 +54,9 @@ public class JwtFilter extends OncePerRequestFilter {
 			
 		}
 		catch (Exception exception) {
-            handlerException.resolveException(request, response, null, exception);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+	        response.setContentType("application/json");
+	        response.getWriter().write("{\"error\": \"" + exception.getMessage() + "\"}");
         }
 		
 		
