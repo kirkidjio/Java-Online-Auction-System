@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface ILotRepository {
 	Optional<LotAggregate> findById(UUID id);
+	void delete(UUID id);
 	void save(LotAggregate entity);
 }

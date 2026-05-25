@@ -35,6 +35,12 @@ public class LotJdbcRepository implements ILotRepository {
 		
 	}
 	
+	@Override
+	public void delete(UUID id) {
+		jdbcTemplate.update("delete from lots where id = ?", id);
+		
+	}
+	
 	
 	@Transactional
 	@Override
@@ -48,9 +54,10 @@ public class LotJdbcRepository implements ILotRepository {
 			        min_bid,
 			        currency,
 			        status,
-			        description
+			        description,
+			        title
 			    )
-			    values (?, ?, ?, ?, ?, ?, ?)
+			    values (?, ?, ?, ?, ?, ?, ?, ?)
 
 			    on conflict(id)
 			    do update set
@@ -65,8 +72,9 @@ public class LotJdbcRepository implements ILotRepository {
 			    Timestamp.valueOf(lot.getTimeOut()),
 			    lot.getMinBid(),
 			    lot.getCurrency(),
-			    lot.getState(),
-			    lot.getDescription());
+			    lot.getState().name(),
+			    lot.getDescription(),
+			    lot.getTitle());
 		
 		List<BidVO> bids = lot.getBids();
 		if(!bids.isEmpty()) {
@@ -75,7 +83,7 @@ public class LotJdbcRepository implements ILotRepository {
 						ps.setObject(1, bid.id());
 						ps.setObject(2, bid.buyerId());
 						ps.setString(3, bid.currency());
-						ps.setFloat(4, bid.value());
+						ps.setBigDecimal(4, bid.value());
 						ps.setObject(5, lot.getId());
 					});
 			
@@ -89,13 +97,17 @@ public class LotJdbcRepository implements ILotRepository {
 				.ownerId(UUID.fromString(row.getString("owner_id")))
 				.currency(row.getString("currency"))
 				.timeout(row.getTimestamp("timeout").toLocalDateTime())
-				.minBid(row.getInt("min_bid"))
-				.state(row.getString("status"))
+				.minBid(row.getBigDecimal("min_bid"))
+				.state(StatusEnum.valueOf(row.getString("status")))
 				.description(row.getString("description"));
 	}	
 	
 	private BidVO mappingBid(ResultSet row, int rowNum) throws SQLException {
-		return new BidVO(UUID.fromString(row.getString("id")) ,UUID.fromString(row.getString("buyer_id")), row.getString("currency"), row.getInt("value"));
+		return new BidVO(
+				UUID.fromString(row.getString("id")), 
+				UUID.fromString(row.getString("buyer_id")),
+				row.getString("currency"),
+				row.getBigDecimal("value"));
 		
 	}
 	
