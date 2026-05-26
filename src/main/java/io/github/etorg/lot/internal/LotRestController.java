@@ -30,7 +30,7 @@ import io.github.etorg.lot.internal.service.dto.MakeBidDto;
 
 
 @RestController
-@RequestMapping("/lots")
+@RequestMapping("/api/lots")
 public class LotRestController {
     
 	@Autowired

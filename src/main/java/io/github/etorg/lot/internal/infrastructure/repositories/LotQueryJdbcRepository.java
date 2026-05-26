@@ -14,8 +14,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import io.github.etorg.lot.internal.infrastructure.repositories.enums.*;
+import io.github.etorg.lot.internal.service.dto.BidDto;
 import io.github.etorg.lot.internal.service.dto.LotCardDto;
 import io.github.etorg.lot.internal.service.dto.LotDto;
+
 
 @Repository
 public class LotQueryJdbcRepository implements ILotQueryRepository {
@@ -52,7 +54,7 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		Map<Order, String> orderSign = Map.of(Order.DESC, "<", Order.ASC, ">");
 		Set<LotAttributeSort> acceptableColumns = Set.of(LotAttributeSort.MIN_BID);
 		
-		if (!acceptableColumns.contains(intAttribute)) throw new RuntimeException("bad value for intAtribute");
+		if (!acceptableColumns.contains(intAttribute)) throw new RuntimeException("bad value for decimal atribute");
 		
 		List<LotCardDto> cards = jdbcTemplate.query("""
 			
@@ -66,22 +68,38 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 	}
 	
 	
-
-	
-	
-	
-	
 	
 	public LotDto getLot(UUID id) {
-		List<LotDto> lot = jdbcTemplate.query("""
+		List<BidDto> bids = getBids(id);
+		
+		List<LotDto.Builder> lot = jdbcTemplate.query("""
 			
-				select * from lots where id = ?
-			
+				select * from lots l
+				join categories c on l.category = c.id
+				where l.id = ?
+				
 				
 				""", this::mappingLot, id);
 		
-		return lot.get(0);
+		return lot.get(0).bids(bids).build();
 	}
+	
+	
+	
+	private List<BidDto> getBids(UUID lotId) {
+		List<BidDto> bids = jdbcTemplate.query("""
+				
+				select * from bids b
+				join users u on u.id = b.buyer_id
+				where b.lot_id = ?
+			
+				
+				""", this::mappingBid, lotId);
+		
+		return bids;
+	}
+		
+	
 	
 	
 	
@@ -91,22 +109,32 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 				row.getBigDecimal("min_bid"),
 				row.getString("currency"),
 				row.getTimestamp("timeout").toLocalDateTime(),
-				row.getTimestamp("created_at").toLocalDateTime());
+				row.getTimestamp("created_at").toLocalDateTime(),
+				row.getString("id"));
 		
 	}
 	
-	private LotDto mappingLot(ResultSet row, int rowNum) throws SQLException {
-		return new LotDto(
-				UUID.fromString(row.getString("id")),
-				UUID.fromString(row.getString("owner_id")),
-				row.getTimestamp("timeout").toLocalDateTime(),
-				row.getString("description"),
-				row.getTimestamp("created_at").toLocalDateTime(),
-				row.getInt("min_bid"),
-				row.getString("currency"),
-				row.getString("status"), 
-				row.getString("title"));
-		
+	private LotDto.Builder mappingLot(ResultSet row, int rowNum) throws SQLException {
+	    return LotDto.builder()
+	            .id(UUID.fromString(row.getString("id")))
+	            .ownerId(UUID.fromString(row.getString("owner_id")))
+	            .timeout(row.getTimestamp("timeout").toLocalDateTime())
+	            .description(row.getString("description"))
+	            .created_at(row.getTimestamp("created_at").toLocalDateTime())
+	            .min_bid(row.getBigDecimal("min_bid"))
+	            .currency(row.getString("currency"))
+	            .status(row.getString("status"))
+	            .title(row.getString("title"))
+	            .category(row.getString("name"));
+	}
+	
+	private BidDto mappingBid(ResultSet row, int rowNum) throws SQLException {
+	    return new BidDto(
+	            UUID.fromString(row.getString("id")),
+	            row.getString("username"),
+	            row.getString("currency"),
+	            row.getBigDecimal("value")
+	    );
 	}
 	
 	

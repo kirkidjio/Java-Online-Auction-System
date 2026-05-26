@@ -36,3 +36,4 @@ mvnw
 *.cmd
 /nbproject
 /.apt_generated_tests/
+*.jpg
