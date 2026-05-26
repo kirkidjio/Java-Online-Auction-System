@@ -40,8 +40,8 @@ public class User implements UserDetails {
 	@Column (name="password", unique = true)
 	private String password;
 	
-	@Column (name="role", columnDefinition = "varchar(100) default 'ROLE_USER'")
-	private String role;
+	@Column (name="role")
+	private String role = "ROLE_USER";
 	
 	@Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

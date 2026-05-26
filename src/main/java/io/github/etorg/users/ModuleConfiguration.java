@@ -21,13 +21,14 @@ public class ModuleConfiguration {
 	
 	@Bean
 	UserDetailsService userDetailsService() {
-		return email -> userRepository.findByEmail(email).orElseThrow();
+		return username -> userRepository.findByUsername(username).orElseThrow();
 	}
 	
 	@Bean
 	BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+	
 	
 	@Bean 
 	AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -42,6 +43,6 @@ public class ModuleConfiguration {
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
-    }
+    } 
 	
 }

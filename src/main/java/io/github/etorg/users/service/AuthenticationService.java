@@ -2,7 +2,10 @@ package io.github.etorg.users.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,12 +39,15 @@ public class AuthenticationService {
 		userRepository.save(user);
 	}
 	
-	public String authenticate(AuthenticationDto input) {
-		authManager.authenticate(new UsernamePasswordAuthenticationToken(input.email(), input.password()));
-		User user = userRepository.findByEmail(input.email()).orElseThrow();
+	public void authenticate(AuthenticationDto input) {
+		User user = userRepository.findByUsername(input.username())
+				.or(() -> userRepository.findByEmail(input.username()))
+				.orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
+		Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), input.password()));
 		
-		return jwtService.buildToken(user.getId());
+		SecurityContextHolder.getContext().setAuthentication(auth);
 		
+		//return jwtService.buildToken(user.getId());
 		
 	}
 }

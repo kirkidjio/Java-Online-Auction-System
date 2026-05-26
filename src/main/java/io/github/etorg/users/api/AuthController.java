@@ -11,7 +11,7 @@ import io.github.etorg.users.service.dto.AuthenticationDto;
 import io.github.etorg.users.service.dto.RegisterUserDto;
 
 @RestController
-@RequestMapping("users/authentication")
+@RequestMapping("api/users/authentication/")
 public class AuthController {
 	
 	@Autowired
@@ -24,8 +24,8 @@ public class AuthController {
 	}
 	
 	@PostMapping("signin/")
-	public String signin(@RequestBody AuthenticationDto form) {
-		return "JWT Token: " + authService.authenticate(form);
+	public void signin(@RequestBody AuthenticationDto form) {
+		authService.authenticate(form);
 	}
 	
 	

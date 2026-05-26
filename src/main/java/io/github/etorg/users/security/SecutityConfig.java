@@ -21,13 +21,11 @@ public class SecutityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 		return http
-				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-				.sessionManagement(session -> session.disable())
 				.authenticationProvider(authProvider)
-				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+				.csrf(csrf -> csrf.disable())
 				.build();
-		
+				
 	}
 	
 	

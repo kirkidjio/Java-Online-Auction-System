@@ -15,7 +15,7 @@ import io.github.etorg.users.service.dto.DeleteUserDto;
 
 
 @RestController
-@RequestMapping("admin/users")
+@RequestMapping("/api/admin/users")
 @PreAuthorize("hasRole('ADMIN')")
 public class UserManagmentController {
 	
