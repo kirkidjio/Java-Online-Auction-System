@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Золотые карманные часы XIX века — BidMaster</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/400.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/500.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/600.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/700.css">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f1117;
+            --bg-secondary: #1a1d27;
+            --bg-card: #1e2130;
+            --bg-card-hover: #252838;
+            --accent: #6c5ce7;
+            --accent-light: #a29bfe;
+            --accent-glow: rgba(108, 92, 231, 0.3);
+            --gold: #f0c040;
+            --gold-dark: #d4a520;
+            --text-primary: #e8e8f0;
+            --text-secondary: #9498b0;
+            --text-muted: #6b6f85;
+            --border: #2a2d3e;
+            --border-light: #353850;
+            --success: #00b894;
+            --danger: #e17055;
+            --gradient-1: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            --gradient-2: linear-gradient(135deg, #f0c040, #e17055);
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+            --shadow-card-hover: 0 8px 40px rgba(0, 0, 0, 0.4);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 6px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15, 17, 23, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-inner {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+
+        .logo-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: var(--accent-light);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: var(--radius-xs);
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: rgba(108, 92, 231, 0.1);
+        }
+
+        .nav-link svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        .user-block {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 6px 6px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .user-block:hover {
+            border-color: var(--accent);
+            background: var(--bg-card);
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 12px var(--accent-glow);
+        }
+
+        .user-avatar svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        /* ===== BREADCRUMB ===== */
+        .breadcrumb {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 20px 24px 0;
+        }
+
+        .breadcrumb-list {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+        }
+
+        .breadcrumb-list a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb-list a:hover {
+            color: var(--accent-light);
+        }
+
+        .breadcrumb-sep {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .breadcrumb-current {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* ===== LOT DETAIL ===== */
+        .lot-detail {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 24px 24px 64px;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* --- Left Column --- */
+        .lot-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .lot-image-main {
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .lot-image-main img {
+            width: 100%;
+            height: 480px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .lot-image-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(0, 184, 148, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(0, 184, 148, 0.3);
+        }
+
+        .lot-description {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+
+        .lot-description .lot-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+
+        .lot-description .lot-category {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--accent-light);
+            margin-bottom: 8px;
+        }
+
+        .lot-description-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .lot-description-text p {
+            margin-bottom: 12px;
+        }
+
+        .lot-description-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* --- Right Column (Bid Panel) --- */
+        .lot-info {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: sticky;
+            top: 96px;
+        }
+
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+
+        /* --- Current Bid Card --- */
+        .current-bid-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(108, 92, 231, 0.08) 100%);
+            border: 1px solid var(--accent);
+        }
+
+        .bid-amount-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .bid-label-big {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bid-amount-big {
+            font-size: 38px;
+            font-weight: 700;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+
+        .bid-time-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: rgba(240, 192, 64, 0.08);
+            border: 1px solid rgba(240, 192, 64, 0.15);
+            border-radius: var(--radius-xs);
+            margin-bottom: 24px;
+        }
+
+        .bid-time-left svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .bid-time-text {
+            font-size: 14px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .bid-time-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .bid-input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .bid-input-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .bid-input-wrap {
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xs);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .bid-input-wrap:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .bid-input-currency {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold);
+            border-right: 1px solid var(--border-light);
+            height: 52px;
+            flex-shrink: 0;
+        }
+
+        .bid-input-field {
+            flex: 1;
+            padding: 14px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .bid-input-field::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .bid-action-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            margin-top: 4px;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: var(--radius-xs);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 4px 20px var(--accent-glow);
+            transition: all 0.2s ease;
+        }
+
+        .bid-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 28px var(--accent-glow);
+        }
+
+        /* --- Seller Card --- */
+        .seller-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .seller-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--gradient-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(240, 192, 64, 0.2);
+        }
+
+        .seller-avatar svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .seller-info {
+            flex: 1;
+        }
+
+        .seller-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .seller-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .seller-rating {
+            font-size: 13px;
+            color: var(--gold);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .seller-rating svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--gold);
+        }
+
+        /* --- Bid History Card --- */
+        .history-card {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .history-header {
+            padding: 20px 24px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .history-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .history-count {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .history-list {
+            list-style: none;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s ease;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .history-item-first {
+            background: rgba(108, 92, 231, 0.06);
+        }
+
+        .history-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .history-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .history-avatar svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-muted);
+        }
+
+        .history-avatar-highlight {
+            border-color: var(--accent);
+            background: rgba(108, 92, 231, 0.1);
+        }
+
+        .history-avatar-highlight svg {
+            fill: var(--accent-light);
+        }
+
+        .history-user {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-username {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .history-user-tag {
+            font-size: 11px;
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+
+        .history-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .history-bid-amount {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .history-bid-currency {
+            font-size: 14px;
+            color: var(--gold);
+        }
+
+        .history-time {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .history-time svg {
+            width: 12px;
+            height: 12px;
+            fill: var(--text-muted);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1000px) {
+            .lot-detail {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .lot-info {
+                position: static;
+            }
+
+            .lot-image-main img {
+                height: 360px;
+            }
+
+            .nav {
+                display: none;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .header-inner {
+                height: 64px;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .lot-detail {
+                padding: 16px 16px 48px;
+            }
+
+            .breadcrumb {
+                padding: 16px 16px 0;
+            }
+
+            .lot-description .lot-title {
+                font-size: 22px;
+            }
+
+            .bid-amount-big {
+                font-size: 30px;
+            }
+
+            .lot-image-main img {
+                height: 260px;
+            }
+
+            .info-card,
+            .lot-description {
+                padding: 18px;
+            }
+
+            .history-item {
+                padding: 14px 18px;
+            }
+
+            .bid-input-wrap {
+                flex-direction: column;
+            }
+
+            .bid-input-currency {
+                border-right: none;
+                border-bottom: 1px solid var(--border-light);
+                width: 100%;
+                padding: 8px;
+                height: auto;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lot-gallery > * {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .lot-gallery > *:nth-child(1) { animation-delay: 0.05s; }
+        .lot-gallery > *:nth-child(2) { animation-delay: 0.1s; }
+
+        .lot-info > .info-card:nth-child(1) { animation: fadeInUp 0.4s 0.15s ease forwards; opacity: 0; }
+        .lot-info > .info-card:nth-child(2) { animation: fadeInUp 0.4s 0.2s ease forwards; opacity: 0; }
+        .lot-info > .info-card:nth-child(3) { animation: fadeInUp 0.4s 0.25s ease forwards; opacity: 0; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <div class="logo-text">e<span>Torg</span></div>
+            </a>
+            <nav class="nav">
+                <a href="#" class="nav-link">
+                    <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                    Лоты
+                </a>
+                <a href="#" class="nav-link">
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    Мои ставки
+                </a>
+                <a href="#" class="nav-link">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    Помощь
+                </a>
+            </nav>
+            <a href="#" class="user-block">
+                <span class="user-name">Алексей М.</span>
+                <div class="user-avatar">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb">
+        <ul class="breadcrumb-list">
+            <li><a href="#">Главная</a></li>
+            <li class="breadcrumb-sep">›</li>
+            <li><a href="#">Часы и украшения</a></li>
+            <li class="breadcrumb-sep">›</li>
+            <li class="breadcrumb-current">Золотые карманные часы XIX века</li>
+        </ul>
+    </nav>
+
+    <!-- LOT DETAIL -->
+    <main class="lot-detail">
+
+        <!-- LEFT: Gallery + Description -->
+        <div class="lot-gallery">
+            <div class="lot-image-main">
+                <img src="https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/1b72f0fa8-c61f-49dc-9b1d-3ac836f08a16.png" alt="Золотые карманные часы XIX века">
+                <span class="lot-image-badge">Активный</span>
+            </div>
+
+            <!-- Description -->
+            <div class="lot-description">
+                <div class="lot-category" th:text="${lot.category}">Часы и украшения</div>
+                <h1 class="lot-title" th:text="${lot.title}">Золотые карманные часы XIX века с автоподзаводом</h1>
+                <div class="lot-description-text" th:text=${lot.description}>
+                    <p>Уникальные карманные часы, изготовленные женевскими мастерами в 1870-х годах. Корпус выполнен из жёлтого золота 18 карат с ручной гравировкой в стиле ар-нуво. Циферблат — эмалированный, белый, с римскими цифрами и минутной шкалой.</p>
+                    <p>Механизм ручного автоподзавода, 17 камней, работает в отличном состоянии. Часы недавно прошли профессиональную реставрацию и полностью функциональны. К комплекту прилагается оригинальная цепочка из золота 14К и сертификат подлинности от Швейцарского часового института.</p>
+                    <p>Идеальный экземпляр для серьёзной коллекции антикварных часов. Все комплектующие оригинальные, замен не производилось.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Bid Panel + History -->
+        <div class="lot-info">
+
+            <!-- Current Bid + Input -->
+            <div class="info-card current-bid-card">
+                <div class="bid-label-big">Текущая ставка</div>
+                <div class="bid-amount-section">
+                    <span class="bid-amount-big" th:text="|${lot.min_bid} ${lot.currency}|">₽ 285 000</span>
+                </div>
+                <div class="bid-time-left">
+                    <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    <div>
+                        <div class="bid-time-text" th:text="${#temporals.format(lot.timeout, 'dd.MM.yyyy')}">21.09.2026</div>
+                        <div class="bid-time-sub">Дата окончания аукциона</div>
+                    </div>
+                </div>
+
+                <div class="bid-input-section">
+                    <label class="bid-input-label" for="bid-input">Ваша ставка</label>
+                    <div class="bid-input-wrap">
+                        <span class="bid-input-currency">₽</span>
+                        <input class="bid-input-field" id="bid-input" type="text" placeholder="Введите сумму ставки">
+                    </div>
+                    <button class="bid-action-btn" type="button">Сделать ставку</button>
+                </div>
+            </div>
+
+            <!-- Seller -->
+            <div class="info-card">
+                <div class="seller-section">
+                    <div class="seller-avatar">
+                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+                    <div class="seller-info">
+                        <div class="seller-label">Продавец</div>
+                        <div class="seller-name">Виктор_Коллекционер</div>
+                        <div class="seller-rating">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            4.9 · 143 сделки
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bid History -->
+            <div class="info-card history-card">
+                <div class="history-header">
+                    <h2 class="history-title">История ставок</h2>
+                    <span class="history-count">12 ставок</span>
+                </div>
+                <ul class="history-list">
+
+                    <th:block th:each="bid, bidStat:${lot.bids}">
+                        <!-- Bid 1 — Current Leader -->
+                        <li class="history-item history-item-first" th:if="${bidStat.first}">
+                            <div class="history-left">
+                                <div class="history-avatar history-avatar-highlight">
+                                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="history-user">
+                                    <span class="history-username" th:text="${bid.username}">Мария_Антиквар</span>
+                                    <span class="history-user-tag">Leader</span>
+                                </div>
+                            </div>
+                            <div class="history-right">ы
+                                <span class="history-bid-amount"><span class="history-bid-currency" th:text="${bid.value}"></span></span>
+                                <span class="history-time">
+                                    <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                                    Сегодня, 14:23
+                                </span>
+                            </div>
+                        </li>
+
+                        <!-- Bid 2 -->
+                        <li class="history-item" th:if=${!BidStat.first}>
+                            <div class="history-left">
+                                <div class="history-avatar">
+                                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="history-user">
+                                    <span class="history-username" th:text=${bid.username}>collector_spb</span>
+                                </div>
+                            </div>
+                            <div class="history-right">
+                                <span class="history-bid-amount" th:text="{bid.value}"><span class="history-bid-currency">₽</span> 280 000</span>
+                                <span class="history-time">
+                                    <svg viewBox="0 0 24 24" th:text=><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                                    Сегодня, 11:05
+                                </span>
+                            </div>
+                        </li>
+                    </th:block>
+
+                    
+
+                </ul>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>© 2025 <a href="#">BidMaster</a> — Онлайн аукционная платформа. Все права защищены.</p>
+    </footer>
+
+</body>
+</html>
+
