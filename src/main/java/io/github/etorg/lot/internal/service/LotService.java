@@ -17,6 +17,7 @@ import io.github.etorg.lot.internal.infrastructure.repositories.ILotQueryReposit
 import io.github.etorg.lot.internal.infrastructure.repositories.ILotRepository;
 import io.github.etorg.lot.internal.infrastructure.repositories.enums.LotAttributeSort;
 import io.github.etorg.lot.internal.infrastructure.repositories.enums.Order;
+import io.github.etorg.lot.internal.service.dto.CategoryDto;
 import io.github.etorg.lot.internal.service.dto.CreateLotDto;
 import io.github.etorg.lot.internal.service.dto.LotCardDto;
 import io.github.etorg.lot.internal.service.dto.LotCardQueryDto;
@@ -73,8 +74,6 @@ public class LotService {
 			return new LotCardsWithCursorDto(cards, cards.getLast().min_bid().toString()); 
 			}
 		
-		
-		
 		else throw new RuntimeException("Attribute %s not sortable".formatted(dto.attribute()));
 	}
 	
@@ -86,8 +85,11 @@ public class LotService {
 		rep.delete(id);
 	}
 	
-	
-	
+	public List<CategoryDto> getCategories(){
+		return repQ.getCategories();
+		
+	}
+
 	
 	
 	

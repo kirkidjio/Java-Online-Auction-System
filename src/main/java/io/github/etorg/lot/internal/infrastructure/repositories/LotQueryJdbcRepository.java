@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import io.github.etorg.lot.internal.infrastructure.repositories.enums.*;
 import io.github.etorg.lot.internal.service.dto.BidDto;
+import io.github.etorg.lot.internal.service.dto.CategoryDto;
 import io.github.etorg.lot.internal.service.dto.LotCardDto;
 import io.github.etorg.lot.internal.service.dto.LotDto;
 
@@ -84,6 +85,18 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		return lot.get(0).bids(bids).build();
 	}
 	
+	public List<CategoryDto> getCategories() {
+		
+		List<CategoryDto> categories = jdbcTemplate.query("""
+			
+				select * from categories
+				
+				
+				""", this::mappingCategory);
+		
+		return categories;
+	}
+	
 	
 	
 	private List<BidDto> getBids(UUID lotId) {
@@ -134,6 +147,13 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 	            row.getString("username"),
 	            row.getString("currency"),
 	            row.getBigDecimal("value")
+	    );
+	}
+	
+	private CategoryDto mappingCategory(ResultSet row, int rowNum) throws SQLException {
+	    return new CategoryDto(
+	            UUID.fromString(row.getString("id")),
+	            row.getString("category")
 	    );
 	}
 	

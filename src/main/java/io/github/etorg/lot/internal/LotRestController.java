@@ -3,6 +3,7 @@ package io.github.etorg.lot.internal;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale.Category;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import io.github.etorg.lot.internal.service.LotService;
+import io.github.etorg.lot.internal.service.dto.CategoryDto;
 import io.github.etorg.lot.internal.service.dto.CreateLotDto;
 import io.github.etorg.lot.internal.service.dto.LotCardDto;
 import io.github.etorg.lot.internal.service.dto.LotCardQueryDto;
@@ -66,6 +68,11 @@ public class LotRestController {
 	@DeleteMapping("item/delete/{id}")
 	public void deleteLot(@PathVariable String id) {
 		lotService.deleteLot(UUID.fromString(id));
+	}
+	
+	@GetMapping("/categories")
+	public List<CategoryDto> getCategories() {
+		return lotService.getCategories();
 	}
 	
 }
