@@ -61,18 +61,22 @@ public class LotService {
 	}
 	
 	public LotCardsWithCursorDto getCards(LotCardQueryDto dto) {
-		if ("TIMEOUT".equals(dto.attribute())) {
+		if ("TIMEOUT".equals(dto.attribute()) && dto.cursor() != null) {
 			List<LotCardDto> cards = repQ.getSortedCards(LotAttributeSort.valueOf(dto.attribute()),Order.valueOf(dto.order()), LocalDateTime.parse(dto.cursor()));
 			return new LotCardsWithCursorDto(cards, cards.getLast().timeout().toString()); 
 			}
-		else if ("CREATED_AT".equals(dto.attribute())) {
+		else if ("CREATED_AT".equals(dto.attribute()) && dto.cursor() != null) {
 			List<LotCardDto> cards = repQ.getSortedCards(LotAttributeSort.valueOf(dto.attribute()),Order.valueOf(dto.order()), LocalDateTime.parse(dto.cursor()));
 			return new LotCardsWithCursorDto(cards, cards.getLast().created_at().toString()); 
 			}
-		else if ("MIN_BID".equals(dto.attribute())) {
+		else if ("MIN_BID".equals(dto.attribute()) && dto.cursor() != null) {
 			List<LotCardDto> cards = repQ.getSortedCards(LotAttributeSort.valueOf(dto.attribute()),Order.valueOf(dto.order()), new BigDecimal(dto.cursor()));
 			return new LotCardsWithCursorDto(cards, cards.getLast().min_bid().toString()); 
 			}
+		else if (dto.cursor() == null) {
+			List<LotCardDto> cards = repQ.getSortedCards(LotAttributeSort.valueOf(dto.attribute()),Order.valueOf(dto.order()));
+			return new LotCardsWithCursorDto(cards, cards.getLast().min_bid().toString()); 
+		}
 		
 		else throw new RuntimeException("Attribute %s not sortable".formatted(dto.attribute()));
 	}

@@ -13,7 +13,8 @@ import io.github.etorg.lot.internal.service.dto.LotDto;
 
 public interface ILotQueryRepository {
 	List<LotCardDto> getSortedCards(LotAttributeSort intAtribute, Order order, BigDecimal cursor);
-	List<LotCardDto> getSortedCards(LotAttributeSort intAtribute, Order order, LocalDateTime cursor);
+	List<LotCardDto> getSortedCards(LotAttributeSort timeAtribute, Order order, LocalDateTime cursor);
+	List<LotCardDto> getSortedCards(LotAttributeSort Atribute, Order order);
 	List<CategoryDto> getCategories();
 	
 	

@@ -53,11 +53,8 @@ public class LotRestController {
 	}
 	
 	@GetMapping("cards/")
-	public LotCardsWithCursorDto getCards(
-			@RequestParam String attribute,
-		    @RequestParam String order,
-		    @RequestParam String cursor) {
-		return lotService.getCards(new LotCardQueryDto(attribute, order, cursor));
+	public LotCardsWithCursorDto getCardsByCursor(@RequestBody LotCardQueryDto form) {
+		return lotService.getCards(form);
 	}
 	
 	@GetMapping("item/{id}")
