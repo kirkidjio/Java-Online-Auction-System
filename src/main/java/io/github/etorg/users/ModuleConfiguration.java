@@ -9,6 +9,8 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 import io.github.etorg.users.infrastructure.UserRepository;
 
@@ -44,5 +46,10 @@ public class ModuleConfiguration {
 
         return authProvider;
     } 
+	
+	@Bean
+	SecurityContextRepository securityContextRepository() {
+	    return new HttpSessionSecurityContextRepository();
+	}
 	
 }

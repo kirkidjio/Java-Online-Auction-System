@@ -5,8 +5,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 
 import io.github.etorg.users.infrastructure.UserRepository;
@@ -14,6 +16,8 @@ import io.github.etorg.users.models.User;
 import io.github.etorg.users.security.JwtService;
 import io.github.etorg.users.service.dto.AuthenticationDto;
 import io.github.etorg.users.service.dto.RegisterUserDto;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class AuthenticationService {
@@ -30,6 +34,9 @@ public class AuthenticationService {
 	@Autowired
 	UserRepository userRepository;
 	
+	@Autowired
+	SecurityContextRepository securityContextRepository;
+	
 	public void signup(RegisterUserDto input) {
 		User user = new User();
 		user.setEmail(input.email());
@@ -39,13 +46,17 @@ public class AuthenticationService {
 		userRepository.save(user);
 	}
 	
-	public void authenticate(AuthenticationDto input) {
-		User user = userRepository.findByUsername(input.username())
-				.or(() -> userRepository.findByEmail(input.username()))
-				.orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
-		Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), input.password()));
+	public void authenticate(AuthenticationDto input,
+	        HttpServletRequest request,
+	        HttpServletResponse response) {
 		
-		SecurityContextHolder.getContext().setAuthentication(auth);
+		Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(input.username(), input.password()));
+		
+		SecurityContext context = SecurityContextHolder.createEmptyContext();
+	    context.setAuthentication(auth);
+	    SecurityContextHolder.setContext(context);
+
+	    securityContextRepository.saveContext(context, request, response);
 		
 		//return jwtService.buildToken(user.getId());
 		

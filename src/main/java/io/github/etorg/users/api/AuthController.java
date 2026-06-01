@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.github.etorg.users.service.AuthenticationService;
 import io.github.etorg.users.service.dto.AuthenticationDto;
 import io.github.etorg.users.service.dto.RegisterUserDto;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("api/users/authentication/")
@@ -24,8 +26,8 @@ public class AuthController {
 	}
 	
 	@PostMapping("signin/")
-	public void signin(@RequestBody AuthenticationDto form) {
-		authService.authenticate(form);
+	public void signin(@RequestBody AuthenticationDto form, HttpServletRequest request, HttpServletResponse response) {
+		authService.authenticate(form, request, response);
 	}
 	
 	
