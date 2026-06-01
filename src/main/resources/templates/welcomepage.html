@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eTorg — Аукционы</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/400.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/600.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/700.css">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --border: #222222;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --accent: #ffffff;
+            --font: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: opacity 0.2s;
+        }
+
+        a:hover {
+            opacity: 0.7;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            opacity: 1;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+            border: 1px solid var(--accent);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            opacity: 1;
+        }
+
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            padding: 80px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .feature h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .feature p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            h1 { font-size: 32px; }
+            .features { grid-template-columns: 1fr; gap: 32px; }
+            .nav-links { display: none; }
+            .hero { padding: 80px 0 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <div class="nav">
+                <a href="#" class="logo">eTorg</a>
+                <div class="nav-links">
+                    <a href="/lots">Лоты</a>
+                    <a href="/auth">Войти</a>
+                    <a href="/auth">Регистрация</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Аукционы уникальных вещей</h1>
+                <p class="subtitle">Покупайте и продавайте редкие предметы, искусство и коллекционные лоты.</p>
+                <div class="actions">
+                    <a href="/lots" class="btn btn-primary">Смотреть лоты</a>
+                    <a href="/auth" class="btn btn-secondary">Регистрация</a>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="features">
+                <div class="feature">
+                    <h3>Безопасные сделки</h3>
+                    <p>Мы гарантируем безопасность платежей и передачу прав владения.</p>
+                </div>
+                <div class="feature">
+                    <h3>Проверенные лоты</h3>
+                    <p>Каждый предмет проходит экспертизу перед выставлением на торги.</p>
+                </div>
+                <div class="feature">
+                    <h3>Удобный интерфейс</h3>
+                    <p>Делайте ставки и следите за аукционами в один клик.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p class="footer-text">© 2025 eTorg. Все права защищены.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
+
