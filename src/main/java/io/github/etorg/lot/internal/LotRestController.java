@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -53,7 +54,7 @@ public class LotRestController {
 	}
 	
 	@GetMapping("cards/")
-	public LotCardsWithCursorDto getCardsByCursor(@RequestBody LotCardQueryDto form) {
+	public LotCardsWithCursorDto getCardsByCursor(@ModelAttribute LotCardQueryDto form) {
 		return lotService.getCards(form);
 	}
 	

@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eTorg — Онлайн Аукцион</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/400.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/500.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/600.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.0/700.css">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f1117;
+            --bg-secondary: #1a1d27;
+            --bg-card: #1e2130;
+            --bg-card-hover: #252838;
+            --accent: #6c5ce7;
+            --accent-light: #a29bfe;
+            --accent-glow: rgba(108, 92, 231, 0.3);
+            --gold: #f0c040;
+            --gold-dark: #d4a520;
+            --text-primary: #e8e8f0;
+            --text-secondary: #9498b0;
+            --text-muted: #6b6f85;
+            --border: #2a2d3e;
+            --border-light: #353850;
+            --success: #00b894;
+            --danger: #e17055;
+            --gradient-1: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            --gradient-2: linear-gradient(135deg, #f0c040, #e17055);
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+            --shadow-card-hover: 0 8px 40px rgba(0, 0, 0, 0.4);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-xs: 6px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15, 17, 23, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-inner {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+
+        .logo-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: var(--accent-light);
+        }
+
+        /* ===== NAV ===== */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: var(--radius-xs);
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: rgba(108, 92, 231, 0.1);
+        }
+
+        .nav-link svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        /* ===== USER ===== */
+        .user-block {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 6px 6px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .user-block:hover {
+            border-color: var(--accent);
+            background: var(--bg-card);
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 12px var(--accent-glow);
+        }
+
+        .user-avatar svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 48px 24px 32px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #e8e8f0, #a29bfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 17px;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* ===== CONTROLS ===== */
+        .controls {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 24px 32px;
+        }
+
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .control-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+        }
+
+        .control-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xs);
+            padding: 10px 36px 10px 14px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%239498b0'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            min-width: 170px;
+        }
+
+        .control-select:hover {
+            border-color: var(--accent);
+        }
+
+        .control-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .control-select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .controls-divider {
+            width: 1px;
+            height: 48px;
+            background: var(--border);
+            flex-shrink: 0;
+        }
+
+        .sort-group {
+            display: flex;
+            align-items: end;
+            gap: 12px;
+        }
+
+        .direction-toggle {
+            display: flex;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xs);
+            overflow: hidden;
+        }
+
+        .direction-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 12px;
+            background: var(--bg-card);
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .direction-btn:first-child {
+            border-right: 1px solid var(--border-light);
+        }
+
+        .direction-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-card-hover);
+        }
+
+        .direction-btn.is-active {
+            color: var(--text-primary);
+            background: var(--accent);
+        }
+
+        .direction-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .lot-count {
+            margin-left: auto;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .lot-count strong {
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+
+        /* ===== GRID ===== */
+        .grid {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 24px 64px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        /* ===== CARD ===== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-card-hover), 0 0 0 1px var(--accent);
+        }
+
+        .card-image-wrap {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .card-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover .card-image-wrap img {
+            transform: scale(1.05);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-active {
+            background: rgba(0, 184, 148, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(0, 184, 148, 0.3);
+        }
+
+        .badge-soon {
+            background: rgba(240, 192, 64, 0.2);
+            color: var(--gold);
+            border: 1px solid rgba(240, 192, 64, 0.3);
+        }
+
+        .badge-ended {
+            background: rgba(225, 112, 85, 0.2);
+            color: var(--danger);
+            border: 1px solid rgba(225, 112, 85, 0.3);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-category {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--accent-light);
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meta-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .meta-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .icon-date {
+            background: rgba(108, 92, 231, 0.15);
+        }
+
+        .icon-date svg {
+            fill: var(--accent-light);
+        }
+
+        .icon-time {
+            background: rgba(240, 192, 64, 0.15);
+        }
+
+        .icon-time svg {
+            fill: var(--gold);
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .meta-value {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .bid-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .bid-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .bid-value {
+            font-size: 22px;
+            font-weight: 700;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .bid-currency {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .state-message {
+            max-width: 1320px;
+            margin: -32px auto 64px;
+            padding: 0 24px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .state-message.is-error {
+            color: var(--danger);
+        }
+
+        .load-more-wrap {
+            max-width: 1320px;
+            margin: -40px auto 64px;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        .load-more-btn {
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xs);
+            color: var(--text-primary);
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .load-more-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            background: var(--bg-card-hover);
+        }
+
+        .load-more-btn:disabled {
+            cursor: wait;
+            opacity: 0.65;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .header-inner {
+                height: 64px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .controls-divider {
+                width: 100%;
+                height: 1px;
+            }
+
+            .sort-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .lot-count {
+                margin-left: 0;
+                text-align: center;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .user-name {
+                display: none;
+            }
+
+            .hero {
+                padding: 32px 16px 24px;
+            }
+
+            .hero h1 {
+                font-size: 24px;
+            }
+
+            .controls {
+                padding: 0 16px 24px;
+            }
+
+            .grid {
+                padding: 0 16px 48px;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.05s; }
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.15s; }
+        .card:nth-child(4) { animation-delay: 0.2s; }
+        .card:nth-child(5) { animation-delay: 0.25s; }
+        .card:nth-child(6) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <div class="logo-text">e<span>Torg</span></div>
+            </a>
+
+            <nav class="nav">
+                <a href="#" class="nav-link">
+                    <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                    Лоты
+                </a>
+                <a href="#" class="nav-link">
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                    Мои ставки
+                </a>
+                <a href="#" class="nav-link">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    Помощь
+                </a>
+            </nav>
+
+            <a href="#" class="user-block">
+                <span class="user-name" th:text="${user}">Алексей М.</span>
+                <div class="user-avatar">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <h1>Находите уникальные лоты</h1>
+        <p>Участвуйте в аукционах с уникальными предметами искусства, антиквариата и коллекционирования со всего мира</p>
+    </section>
+
+    <!-- CONTROLS -->
+    <section class="controls">
+        <form class="controls-bar" id="lotCardsForm">
+            <div class="control-group">
+                <span class="control-label">Категория</span>
+                <select class="control-select" id="categorySelect" disabled>
+                    <option>Все категории</option>
+                    <option>Часы и украшения</option>
+                    <option>Живопись</option>
+                    <option>Автомобили</option>
+                    <option>Музыка и винил</option>
+                    <option>Фарфор и керамика</option>
+                    <option>Монеты и медали</option>
+                </select>
+            </div>
+
+            <div class="controls-divider"></div>
+
+            <div class="sort-group">
+                <div class="control-group">
+                    <span class="control-label">Сортировка</span>
+                    <select class="control-select" id="sortAttribute" name="attribute">
+                        <option>По дате создания</option>
+                        <option>По таймауту</option>
+                        <option>По последней ставке</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <span class="control-label">Направление</span>
+                    <div class="direction-toggle">
+                        <button class="direction-btn" type="button" data-order="ASC" aria-label="ASC">
+                            <svg viewBox="0 0 24 24"><path d="M7 14l5-5 5 5z"/></svg>
+                        </button>
+                        <button class="direction-btn is-active" type="button" data-order="DESC" aria-label="DESC">
+                            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lot-count" id="lotCount">
+                Найдено: <strong>6 лотов</strong>
+            </div>
+        </form>
+    </section>
+
+    <!-- LOTS GRID -->
+    <main class="grid">
+
+        <!-- Card 1 -->
+        <article class="card">
+            <div class="card-image-wrap">
+                <img src="https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/1b72f0fa8-c61f-49dc-9b1d-3ac836f08a16.png" alt="Золотые карманные часы XIX века">
+                <span class="card-badge badge-active">Активный</span>
+            </div>
+            <div class="card-body">
+                <div class="card-category">Часы и украшения</div>
+                <h3 class="card-title">Золотые карманные часы XIX века с автоподзаводом</h3>
+                <div class="card-meta">
+                    <div class="meta-row">
+                        <div class="meta-item">
+                            <div class="meta-icon icon-date">
+                                <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Открытие</div>
+                                <div class="meta-value">15.01.2025</div>
+                            </div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-icon icon-time">
+                                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Таймаут</div>
+                                <div class="meta-value">2д 14ч 32м</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bid-section">
+                    <span class="bid-label">Последняя ставка</span>
+                    <span class="bid-value"><span class="bid-currency">₽</span> 285 000</span>
+                </div>
+            </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="card">
+            <div class="card-image-wrap">
+                <img src="https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/10b31c11e-6804-4588-ade0-7c3d9f45787b.png" alt="Антикварная картина с пейзажем">
+                <span class="card-badge badge-active">Активный</span>
+            </div>
+            <div class="card-body">
+                <div class="card-category">Живопись</div>
+                <h3 class="card-title">Антикварная масляная картина «Горный закат», 1890-е</h3>
+                <div class="card-meta">
+                    <div class="meta-row">
+                        <div class="meta-item">
+                            <div class="meta-icon icon-date">
+                                <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Открытие</div>
+                                <div class="meta-value">12.01.2025</div>
+                            </div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-icon icon-time">
+                                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Таймаут</div>
+                                <div class="meta-value">5д 8ч 15м</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bid-section">
+                    <span class="bid-label">Последняя ставка</span>
+                    <span class="bid-value"><span class="bid-currency">$</span> 12 400</span>
+                </div>
+            </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="card">
+            <div class="card-image-wrap">
+                <img src="https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/17558ea34-d20b-4765-adf7-7f6538071870.png" alt="Бриллиантовое кольцо">
+                <span class="card-badge badge-soon">Скоро старт</span>
+            </div>
+            <div class="card-body">
+                <div class="card-category">Часы и украшения</div>
+                <h3 class="card-title">Бриллиантовое кольцо, платина 950, 3.2 карата, GIA</h3>
+                <div class="card-meta">
+                    <div class="meta-row">
+                        <div class="meta-item">
+                            <div class="meta-icon icon-date">
+                                <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Открытие</div>
+                                <div class="meta-value">22.01.2025</div>
+                            </div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-icon icon-time">
+                                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Таймаут</div>
+                                <div class="meta-value">0д 0ч 0м</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bid-section">
+                    <span class="bid-label">Последняя ставка</span>
+                    <span class="bid-value"><span class="bid-currency">€</span> 0</span>
+                </div>
+            </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="card">
+            <div class="card-image-wrap">
+                <img src="https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/1d0b30d1e-a058-4acb-b7a0-3a36eee163f9.png" alt="Классический автомобиль Ferrari">
+                <span class="card-badge badge-active">Активный</span>
+            </div>
+            <div class="card-body">
+                <div class="card-category">Автомобили</div>
+                <h3 class="card-title">Ferrari 250 GT 1963 года, реставрированный, оригинал</h3>
+                <div class="card-meta">
+                    <div class="meta-row">
+                        <div class="meta-item">
+                            <div class="meta-icon icon-date">
+                                <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Открытие</div>
+                                <div class="meta-value">10.01.2025</div>
+                            </div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-icon icon-time">
+                                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Таймаут</div>
+                                <div class="meta-value">7д 22ч 45м</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bid-section">
+                    <span class="bid-label">Последняя ставка</span>
+                    <span class="bid-value"><span class="bid-currency">$</span> 1 850 000</span>
+                </div>
+            </div>
+        </article>
+
+        <!-- Card 5 -->
+        <article class="card">
+            <div class="card-image-wrap">
+                <img src="https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/1929080dc-f8c4-4d57-ad93-f7c9087a5357.png" alt="Коллекция виниловых пластинок">
+                <span class="card-badge badge-ended">Завершён</span>
+            </div>
+            <div class="card-body">
+                <div class="card-category">Музыка и винил</div>
+                <h3 class="card-title">Коллекция виниловых пластинок Led Zeppelin, Pink Floyd, Queen</h3>
+                <div class="card-meta">
+                    <div class="meta-row">
+                        <div class="meta-item">
+                            <div class="meta-icon icon-date">
+                                <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Открытие</div>
+                                <div class="meta-value">05.01.2025</div>
+                            </div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-icon icon-time">
+                                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Таймаут</div>
+                                <div class="meta-value">Завершён</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bid-section">
+                    <span class="bid-label">Последняя ставка</span>
+                    <span class="bid-value"><span class="bid-currency">₽</span> 142 500</span>
+                </div>
+            </div>
+        </article>
+
+        <!-- Card 6 -->
+        <article class="card">
+            <div class="card-image-wrap">
+                <img src="https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/1732ef840-708c-40ca-aaf2-0839e49a6643.png" alt="Фарфоровая ваза династии Мин">
+                <span class="card-badge badge-active">Активный</span>
+            </div>
+            <div class="card-body">
+                <div class="card-category">Фарфор и керамика</div>
+                <h3 class="card-title">Фарфоровая ваза с росписью, династия Мин, XV век</h3>
+                <div class="card-meta">
+                    <div class="meta-row">
+                        <div class="meta-item">
+                            <div class="meta-icon icon-date">
+                                <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Открытие</div>
+                                <div class="meta-value">18.01.2025</div>
+                            </div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-icon icon-time">
+                                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                            </div>
+                            <div>
+                                <div class="meta-label">Таймаут</div>
+                                <div class="meta-value">3д 19ч 50м</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bid-section">
+                    <span class="bid-label">Последняя ставка</span>
+                    <span class="bid-value"><span class="bid-currency">€</span> 47 800</span>
+                </div>
+            </div>
+        </article>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>© 2025 <a href="#">BidMaster</a> — Онлайн аукционная платформа. Все права защищены.</p>
+    </footer>
+
+    <script>
+        (function () {
+            "use strict";
+
+            var CARDS_ENDPOINT = "/api/lots/cards/";
+            var DEFAULT_ORDER = "DESC";
+            var loadedCards = [];
+            var nextCursor = null;
+            var currentOrder = DEFAULT_ORDER;
+            var isLoading = false;
+
+            var fallbackImages = [
+                "https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/1b72f0fa8-c61f-49dc-9b1d-3ac836f08a16.png",
+                "https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/10b31c11e-6804-4588-ade0-7c3d9f45787b.png",
+                "https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/17558ea34-d20b-4765-adf7-7f6538071870.png",
+                "https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/1d0b30d1e-a058-4acb-b7a0-3a36eee163f9.png",
+                "https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/1929080dc-f8c4-4d57-ad93-f7c9087a5357.png",
+                "https://image.qwenlm.ai/public_source/38461117-02e7-4a99-9359-c09d082fe772/1732ef840-708c-40ca-aaf2-0839e49a6643.png"
+            ];
+
+            var labels = {
+                allCategories: "\u0412\u0441\u0435 \u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u0438",
+                categoryUnavailable: "\u0424\u0438\u043b\u044c\u0442\u0440 \u0436\u0434\u0435\u0442 category \u0432 LotCardDto",
+                createdAt: "\u041f\u043e \u0434\u0430\u0442\u0435 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044f",
+                timeout: "\u041f\u043e \u0442\u0430\u0439\u043c\u0430\u0443\u0442\u0443",
+                minBid: "\u041f\u043e \u043c\u0438\u043d. \u0441\u0442\u0430\u0432\u043a\u0435",
+                lot: "\u041b\u043e\u0442",
+                active: "\u0410\u043a\u0442\u0438\u0432\u043d\u044b\u0439",
+                ended: "\u0417\u0430\u0432\u0435\u0440\u0448\u0435\u043d",
+                opening: "\u041e\u0442\u043a\u0440\u044b\u0442\u0438\u0435",
+                timeoutLabel: "\u0422\u0430\u0439\u043c\u0430\u0443\u0442",
+                bid: "\u0421\u0442\u0430\u0440\u0442\u043e\u0432\u0430\u044f \u0441\u0442\u0430\u0432\u043a\u0430",
+                loading: "\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u044e \u043b\u043e\u0442\u044b...",
+                empty: "\u041b\u043e\u0442\u044b \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u044b.",
+                error: "\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u043b\u043e\u0442\u044b.",
+                loadMore: "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0435\u0449\u0435",
+                found: "\u0417\u0430\u0433\u0440\u0443\u0436\u0435\u043d\u043e: "
+            };
+
+            document.addEventListener("DOMContentLoaded", function () {
+                var grid = document.querySelector(".grid");
+                var form = document.getElementById("lotCardsForm");
+                var attributeSelect = document.getElementById("sortAttribute");
+                var categorySelect = document.getElementById("categorySelect");
+
+                if (!grid || !form || !attributeSelect) {
+                    return;
+                }
+
+                grid.id = "lotCardsGrid";
+                grid.innerHTML = "";
+                prepareForm(attributeSelect, categorySelect);
+                createStateNodes(grid);
+                setupInfiniteScroll();
+                bindControls(form, attributeSelect);
+                loadCards(true);
+            });
+
+            function prepareForm(attributeSelect, categorySelect) {
+                attributeSelect.innerHTML = "";
+                addOption(attributeSelect, "CREATED_AT", labels.createdAt);
+                addOption(attributeSelect, "TIMEOUT", labels.timeout);
+                addOption(attributeSelect, "MIN_BID", labels.minBid);
+                attributeSelect.value = "MIN_BID";
+
+                if (categorySelect) {
+                    categorySelect.innerHTML = "";
+                    addOption(categorySelect, "", labels.allCategories);
+                    categorySelect.title = labels.categoryUnavailable;
+                }
+            }
+
+            function addOption(select, value, text) {
+                var option = document.createElement("option");
+                option.value = value;
+                option.textContent = text;
+                select.appendChild(option);
+            }
+
+            function createStateNodes(grid) {
+                var state = document.createElement("div");
+                state.className = "state-message";
+                state.id = "lotCardsState";
+                state.hidden = true;
+                grid.insertAdjacentElement("afterend", state);
+
+                var wrap = document.createElement("div");
+                wrap.className = "load-more-wrap";
+                wrap.id = "loadMoreWrap";
+                wrap.hidden = true;
+
+                var button = document.createElement("button");
+                button.className = "load-more-btn";
+                button.id = "loadMoreLots";
+                button.type = "button";
+                button.textContent = labels.loadMore;
+                button.addEventListener("click", function () {
+                    loadCards(false);
+                });
+
+                wrap.appendChild(button);
+
+                var sentinel = document.createElement("div");
+                sentinel.id = "autoLoadSentinel";
+                sentinel.setAttribute("aria-hidden", "true");
+                wrap.appendChild(sentinel);
+
+                state.insertAdjacentElement("afterend", wrap);
+            }
+
+            function setupInfiniteScroll() {
+                var sentinel = document.getElementById("autoLoadSentinel");
+                if (!sentinel || !("IntersectionObserver" in window)) {
+                    return;
+                }
+
+                var observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting && nextCursor && !isLoading) {
+                            loadCards(false);
+                        }
+                    });
+                }, {
+                    root: null,
+                    rootMargin: "240px 0px",
+                    threshold: 0
+                });
+
+                observer.observe(sentinel);
+            }
+
+            function bindControls(form, attributeSelect) {
+                form.addEventListener("submit", function (event) {
+                    event.preventDefault();
+                    loadCards(true);
+                });
+
+                attributeSelect.addEventListener("change", function () {
+                    loadCards(true);
+                });
+
+                Array.prototype.forEach.call(document.querySelectorAll(".direction-btn"), function (button) {
+                    button.addEventListener("click", function () {
+                        currentOrder = button.dataset.order || DEFAULT_ORDER;
+                        Array.prototype.forEach.call(document.querySelectorAll(".direction-btn"), function (item) {
+                            item.classList.toggle("is-active", item === button);
+                        });
+                        loadCards(true);
+                    });
+                });
+            }
+
+            async function loadCards(reset) {
+                if (isLoading) {
+                    return;
+                }
+
+                isLoading = true;
+                setLoading(true);
+                setState(labels.loading, false);
+
+                if (reset) {
+                    loadedCards = [];
+                    nextCursor = null;
+                    renderCards();
+                }
+
+                try {
+                    var request = buildRequest(reset);
+                    var response = await fetch(buildCardsUrl(request), {
+                        method: "GET",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("HTTP " + response.status);
+                    }
+
+                    var payload = await response.json();
+                    var batch = Array.isArray(payload.lotcards) ? payload.lotcards : [];
+                    loadedCards = loadedCards.concat(batch);
+                    nextCursor = payload.cursor || null;
+                    renderCards();
+
+                    if (loadedCards.length === 0) {
+                        setState(labels.empty, false);
+                    } else {
+                        clearState();
+                    }
+                } catch (error) {
+                    console.error(error);
+                    setState(labels.error, true);
+                } finally {
+                    isLoading = false;
+                    setLoading(false);
+                    updateLoadMore();
+                    updateCount();
+                }
+            }
+
+            function buildRequest(reset) {
+                var attribute = document.getElementById("sortAttribute").value || "MIN_BID";
+                var cursor = reset ? initialCursor(attribute, currentOrder) : nextCursor;
+
+                return {
+                    attribute: attribute,
+                    order: currentOrder,
+                    cursor: cursor
+                };
+            }
+
+            function buildCardsUrl(request) {
+                var params = new URLSearchParams();
+                params.set("attribute", request.attribute);
+                params.set("order", request.order);
+
+                if (request.cursor !== null && request.cursor !== undefined) {
+                    params.set("cursor", request.cursor);
+                }
+
+                return CARDS_ENDPOINT + "?" + params.toString();
+            }
+
+            function initialCursor(attribute, order) {
+                if (attribute === "MIN_BID") {
+                    return null;
+                }
+
+                if (order === "DESC") {
+                    return "9999-12-31T23:59:59";
+                }
+
+                return "1970-01-01T00:00:00";
+            }
+
+            function renderCards() {
+                var grid = document.getElementById("lotCardsGrid");
+                if (!grid) {
+                    return;
+                }
+
+                grid.innerHTML = "";
+                loadedCards.forEach(function (card, index) {
+                    grid.appendChild(createCard(card, index));
+                });
+            }
+
+            function createCard(card, index) {
+                var article = document.createElement("article");
+                var isEnded = isPast(card.timeout);
+                article.className = "card";
+                article.tabIndex = 0;
+                article.setAttribute("role", "link");
+                article.setAttribute("aria-label", card.title || labels.lot);
+
+                if (card.id) {
+                    article.addEventListener("click", function () {
+                        window.location.href = "/lots/" + encodeURIComponent(card.id);
+                    });
+                    article.addEventListener("keydown", function (event) {
+                        if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            article.click();
+                        }
+                    });
+                }
+
+                article.innerHTML =
+                    '<div class="card-image-wrap">' +
+                        '<img src="' + escapeHtml(imageFor(card, index)) + '" alt="' + escapeHtml(card.title || labels.lot) + '">' +
+                        '<span class="card-badge ' + (isEnded ? "badge-ended" : "badge-active") + '">' + escapeHtml(isEnded ? labels.ended : labels.active) + '</span>' +
+                    '</div>' +
+                    '<div class="card-body">' +
+                        '<div class="card-category">' + escapeHtml(card.category || labels.lot) + '</div>' +
+                        '<h3 class="card-title">' + escapeHtml(card.title || labels.lot) + '</h3>' +
+                        '<div class="card-meta">' +
+                            '<div class="meta-row">' +
+                                metaItem("icon-date", labels.opening, formatDate(card.created_at)) +
+                                metaItem("icon-time", labels.timeoutLabel, formatTimeout(card.timeout)) +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="bid-section">' +
+                            '<span class="bid-label">' + escapeHtml(labels.bid) + '</span>' +
+                            '<span class="bid-value"><span class="bid-currency">' + escapeHtml(currencySymbol(card.currency)) + '</span> ' + escapeHtml(formatMoney(card.min_bid)) + '</span>' +
+                        '</div>' +
+                    '</div>';
+
+                return article;
+            }
+
+            function metaItem(iconClass, label, value) {
+                return '<div class="meta-item">' +
+                    '<div class="meta-icon ' + iconClass + '">' +
+                        '<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>' +
+                    '</div>' +
+                    '<div>' +
+                        '<div class="meta-label">' + escapeHtml(label) + '</div>' +
+                        '<div class="meta-value">' + escapeHtml(value) + '</div>' +
+                    '</div>' +
+                '</div>';
+            }
+
+            function imageFor(card, index) {
+                var id = String(card.id || card.title || index);
+                var hash = 0;
+                for (var i = 0; i < id.length; i += 1) {
+                    hash = (hash + id.charCodeAt(i)) % fallbackImages.length;
+                }
+                return fallbackImages[hash];
+            }
+
+            function formatDate(value) {
+                var date = parseDate(value);
+                if (!date) {
+                    return "-";
+                }
+                return new Intl.DateTimeFormat("ru-RU").format(date);
+            }
+
+            function formatTimeout(value) {
+                var date = parseDate(value);
+                if (!date) {
+                    return "-";
+                }
+
+                var diff = date.getTime() - Date.now();
+                if (diff <= 0) {
+                    return labels.ended;
+                }
+
+                var minutes = Math.floor(diff / 60000);
+                var days = Math.floor(minutes / 1440);
+                var hours = Math.floor((minutes % 1440) / 60);
+                var restMinutes = minutes % 60;
+                return days + "\u0434 " + hours + "\u0447 " + restMinutes + "\u043c";
+            }
+
+            function formatMoney(value) {
+                var number = Number(value);
+                if (!Number.isFinite(number)) {
+                    return String(value || "0");
+                }
+                return new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2 }).format(number);
+            }
+
+            function currencySymbol(currency) {
+                var map = {
+                    RUB: "\u20bd",
+                    RUR: "\u20bd",
+                    USD: "$",
+                    EUR: "\u20ac"
+                };
+                return map[currency] || currency || "";
+            }
+
+            function parseDate(value) {
+                if (!value) {
+                    return null;
+                }
+                var date = new Date(value);
+                return Number.isNaN(date.getTime()) ? null : date;
+            }
+
+            function isPast(value) {
+                var date = parseDate(value);
+                return Boolean(date && date.getTime() <= Date.now());
+            }
+
+            function setLoading(value) {
+                var button = document.getElementById("loadMoreLots");
+                if (button) {
+                    button.disabled = value;
+                }
+            }
+
+            function setState(message, isError) {
+                var state = document.getElementById("lotCardsState");
+                if (state) {
+                    state.textContent = message;
+                    state.classList.toggle("is-error", Boolean(isError));
+                    state.hidden = false;
+                }
+            }
+
+            function clearState() {
+                var state = document.getElementById("lotCardsState");
+                if (state) {
+                    state.hidden = true;
+                    state.textContent = "";
+                    state.classList.remove("is-error");
+                }
+            }
+
+            function updateLoadMore() {
+                var wrap = document.getElementById("loadMoreWrap");
+                if (wrap) {
+                    wrap.hidden = !nextCursor || loadedCards.length === 0;
+                }
+            }
+
+            function updateCount() {
+                var count = document.getElementById("lotCount");
+                if (count) {
+                    count.innerHTML = escapeHtml(labels.found) + "<strong>" + loadedCards.length + "</strong>";
+                }
+            }
+
+            function escapeHtml(value) {
+                return String(value == null ? "" : value)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+        }());
+    </script>
+
+</body>
+</html>
+

@@ -1,5 +1,6 @@
 package io.github.etorg;
 
+import java.security.Principal;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +38,18 @@ public class UiController {
 		return "lot";
 	} 
 	
+	@GetMapping("lots")
+	public String getLots(Model model, Principal principal) {
+		if(principal == null)
+			model.addAttribute("user", "anonymous");
+		else 
+			model.addAttribute("user", principal.getName());
+		return "lotcards";
+	}
+	
+	@GetMapping("")
+	public String welcomePage() {
+		return "welcomepage";
+	}
 	
 }
