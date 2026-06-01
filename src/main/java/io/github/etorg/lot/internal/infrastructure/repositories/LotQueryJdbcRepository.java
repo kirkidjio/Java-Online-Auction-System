@@ -37,7 +37,7 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		
 		List<LotCardDto> cards = jdbcTemplate.query("""
 			
-				select created_at, title, min_bid, currency, timeout from lots 
+				select id, created_at, title, min_bid, currency, timeout from lots 
 				where %s %s ?
 				order by %s %s limit 10
 			
@@ -55,7 +55,7 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		
 		List<LotCardDto> cards = jdbcTemplate.query("""
 			
-				select created_at, title, min_bid, currency, timeout from lots 
+				select id, created_at, title, min_bid, currency, timeout from lots 
 				where %s %s ?
 				order by %s %s limit 10
 			
@@ -66,19 +66,18 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 	
 	
 	public List<LotCardDto> getSortedCards(LotAttributeSort intAttribute, Order order){
-		Map<Order, String> orderSign = Map.of(Order.DESC, "<", Order.ASC, ">");
 		Set<LotAttributeSort> acceptableColumns = Set.of(LotAttributeSort.MIN_BID);
 		
 		if (!acceptableColumns.contains(intAttribute)) throw new RuntimeException("bad value for decimal atribute");
 		
 		List<LotCardDto> cards = jdbcTemplate.query("""
 			
-				select created_at, title, min_bid, currency, timeout from lots 
+				select id, created_at, title, min_bid, currency, timeout from lots 
 				
 				order by %s %s limit 10
 			
 				
-				""".formatted(intAttribute.name(), orderSign.get(order), intAttribute.name(), order.name()), this::mappingCard);
+				""".formatted(intAttribute.name(), order.name()), this::mappingCard);
 		return cards;
 	}
 	
