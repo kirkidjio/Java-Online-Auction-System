@@ -1,0 +1,482 @@
+openapi: 3.0.3
+info:
+  title: eTorg API
+  version: 0.0.1
+  description: REST API for the eTorg online auction backend MVP.
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+tags:
+  - name: Authentication
+  - name: Lots
+  - name: Admin Users
+security:
+  - bearerAuth: []
+paths:
+  /api/users/authentication/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserRequest'
+            example:
+              email: john@example.com
+              username: john_auction
+              password: Password1!
+      responses:
+        '200':
+          description: User registered
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: User registered
+  /api/users/authentication/signin:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate user and return JWT
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequest'
+            example:
+              username: john_auction
+              password: Password1!
+      responses:
+        '200':
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtResponse'
+              example:
+                jwt: eyJhbGciOiJIUzI1NiJ9...
+  /api/lots/create/:
+    put:
+      tags:
+        - Lots
+      summary: Create a new auction lot
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLotRequest'
+            example:
+              currency: PLN
+              timeout: '2026-08-01T18:00:00'
+              description: Vintage mechanical watch in good condition
+              minBid: 100.00
+              title: Vintage Watch
+      responses:
+        '200':
+          description: Created marker
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 201
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/lots/makebid/:
+    post:
+      tags:
+        - Lots
+      summary: Place a bid on a lot
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MakeBidRequest'
+            example:
+              lotId: 61b04e77-df64-4a07-b4a7-4c9d6f0ac121
+              currency: PLN
+              value: 150.00
+      responses:
+        '200':
+          description: Created marker
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 201
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/lots/cards/:
+    get:
+      tags:
+        - Lots
+      summary: Get lot cards with cursor-based sorting
+      security: []
+      parameters:
+        - name: attribute
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/LotAttributeSort'
+          example: MIN_BID
+        - name: order
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/SortOrder'
+          example: ASC
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+          example: '100.00'
+      responses:
+        '200':
+          description: Lot cards with next cursor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LotCardsWithCursor'
+  /api/lots/item/{id}:
+    get:
+      tags:
+        - Lots
+      summary: Get lot details
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Lot details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lot'
+  /api/lots/item/delete/{id}:
+    delete:
+      tags:
+        - Lots
+      summary: Delete lot
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Lot deleted
+  /api/lots/categories:
+    get:
+      tags:
+        - Lots
+      summary: Get available categories
+      security: []
+      responses:
+        '200':
+          description: Category list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+  /api/admin/users/change-role:
+    post:
+      tags:
+        - Admin Users
+      summary: Change user role
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeRoleRequest'
+            example:
+              username: john_auction
+              role: ROLE_MODERATOR
+      responses:
+        '200':
+          description: Created marker
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 201
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/admin/users/delete:
+    delete:
+      tags:
+        - Admin Users
+      summary: Delete user by username
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteUserRequest'
+            example:
+              username: john_auction
+      responses:
+        '200':
+          description: Created marker
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 201
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: true
+          example:
+            error: Invalid or expired token
+  schemas:
+    RegisterUserRequest:
+      type: object
+      required:
+        - email
+        - username
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        username:
+          type: string
+          minLength: 4
+          maxLength: 20
+          pattern: '^[a-zA-Z0-9_]+$'
+          example: john_auction
+        password:
+          type: string
+          minLength: 8
+          maxLength: 100
+          example: Password1!
+    AuthenticationRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: john_auction
+        password:
+          type: string
+          example: Password1!
+    JwtResponse:
+      type: object
+      properties:
+        jwt:
+          type: string
+          example: eyJhbGciOiJIUzI1NiJ9...
+    CreateLotRequest:
+      type: object
+      required:
+        - currency
+        - timeout
+        - description
+        - minBid
+        - title
+      properties:
+        currency:
+          type: string
+          example: PLN
+        timeout:
+          type: string
+          format: date-time
+          example: '2026-08-01T18:00:00'
+        description:
+          type: string
+          example: Vintage mechanical watch in good condition
+        minBid:
+          type: number
+          format: decimal
+          example: 100.00
+        title:
+          type: string
+          example: Vintage Watch
+    MakeBidRequest:
+      type: object
+      required:
+        - lotId
+        - currency
+        - value
+      properties:
+        lotId:
+          type: string
+          format: uuid
+          example: 61b04e77-df64-4a07-b4a7-4c9d6f0ac121
+        currency:
+          type: string
+          example: PLN
+        value:
+          type: number
+          format: decimal
+          example: 150.00
+    LotCardsWithCursor:
+      type: object
+      properties:
+        lotcards:
+          type: array
+          items:
+            $ref: '#/components/schemas/LotCard'
+        cursor:
+          type: string
+          example: '100.00'
+    LotCard:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Vintage Watch
+        min_bid:
+          type: number
+          format: decimal
+          example: 100.00
+        currency:
+          type: string
+          example: PLN
+        timeout:
+          type: string
+          format: date-time
+          example: '2026-08-01T18:00:00'
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-06-01T12:00:00'
+        id:
+          type: string
+          format: uuid
+          example: 61b04e77-df64-4a07-b4a7-4c9d6f0ac121
+    Lot:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ownerId:
+          type: string
+          format: uuid
+        timeout:
+          type: string
+          format: date-time
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        min_bid:
+          type: number
+          format: decimal
+        currency:
+          type: string
+        status:
+          $ref: '#/components/schemas/LotStatus'
+        title:
+          type: string
+        bids:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bid'
+        category:
+          type: string
+    Bid:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        currency:
+          type: string
+        value:
+          type: number
+          format: decimal
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        category:
+          type: string
+    ChangeRoleRequest:
+      type: object
+      required:
+        - username
+        - role
+      properties:
+        username:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+    DeleteUserRequest:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+    UserRole:
+      type: string
+      enum:
+        - ROLE_ADMIN
+        - ROLE_MODERATOR
+        - ROLE_USER
+    LotStatus:
+      type: string
+      enum:
+        - OPEN
+        - CLOSED
+        - DRAW
+        - NOT_ACTIVATED
+    LotAttributeSort:
+      type: string
+      enum:
+        - CREATED_AT
+        - TIMEOUT
+        - MIN_BID
+    SortOrder:
+      type: string
+      enum:
+        - ASC
+        - DESC
