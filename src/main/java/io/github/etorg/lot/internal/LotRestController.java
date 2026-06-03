@@ -47,8 +47,8 @@ public class LotRestController {
 	}
 	
 	@PreAuthorize("isAuthenticated()")
-	@PostMapping("/makebid/{userId}")
-	public int makeBid(@RequestBody MakeBidDto form, @PathVariable String userId, Principal principal) {
+	@PostMapping("/makebid/")
+	public int makeBid(@RequestBody MakeBidDto form, Principal principal) {
 		lotService.makeBid(UUID.fromString(principal.getName()), form);
 		return 201;
 	}
@@ -67,6 +67,7 @@ public class LotRestController {
 	public void deleteLot(@PathVariable String id) {
 		lotService.deleteLot(UUID.fromString(id));
 	}
+	
 	
 	@GetMapping("/categories")
 	public List<CategoryDto> getCategories() {
