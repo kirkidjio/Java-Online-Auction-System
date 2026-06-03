@@ -47,9 +47,5 @@ public class ModuleConfiguration {
         return authProvider;
     } 
 	
-	@Bean
-	SecurityContextRepository securityContextRepository() {
-	    return new HttpSessionSecurityContextRepository();
-	}
 	
 }

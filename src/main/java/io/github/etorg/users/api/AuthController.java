@@ -1,5 +1,7 @@
 package io.github.etorg.users.api;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,21 +15,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("api/users/authentication/")
+@RequestMapping({"", "/api/users/authentication"})
 public class AuthController {
 	
 	@Autowired
 	AuthenticationService authService;
 	
-	@PostMapping("signup/")
+	@PostMapping({"/signup"})
 	public String signup(@RequestBody RegisterUserDto form) {
 		authService.signup(form);
 		return "User registered";
 	}
 	
-	@PostMapping("signin/")
-	public void signin(@RequestBody AuthenticationDto form, HttpServletRequest request, HttpServletResponse response) {
-		authService.authenticate(form, request, response);
+	@PostMapping({"/signin"})
+	public Map<String, String> signin(@RequestBody AuthenticationDto form) {
+		return authService.authenticate(form);
 	}
 	
 	

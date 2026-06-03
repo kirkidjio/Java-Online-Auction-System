@@ -1,5 +1,7 @@
 package io.github.etorg.users.service;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,8 +36,7 @@ public class AuthenticationService {
 	@Autowired
 	UserRepository userRepository;
 	
-	@Autowired
-	SecurityContextRepository securityContextRepository;
+	
 	
 	public void signup(RegisterUserDto input) {
 		User user = new User();
@@ -46,19 +47,13 @@ public class AuthenticationService {
 		userRepository.save(user);
 	}
 	
-	public void authenticate(AuthenticationDto input,
-	        HttpServletRequest request,
-	        HttpServletResponse response) {
+	public Map<String, String> authenticate(AuthenticationDto input) {
 		
-		Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(input.username(), input.password()));
+		authManager.authenticate(new UsernamePasswordAuthenticationToken(input.username(), input.password()));
+		User user = userRepository.findByUsername(input.username()).orElseThrow();
+		return Map.of("jwt" ,jwtService.buildToken(user.getId()));
 		
-		SecurityContext context = SecurityContextHolder.createEmptyContext();
-	    context.setAuthentication(auth);
-	    SecurityContextHolder.setContext(context);
-
-	    securityContextRepository.saveContext(context, request, response);
 		
-		//return jwtService.buildToken(user.getId());
 		
 	}
 }
