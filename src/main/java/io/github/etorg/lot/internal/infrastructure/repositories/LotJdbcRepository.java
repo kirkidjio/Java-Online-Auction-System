@@ -34,8 +34,8 @@ public class LotJdbcRepository implements ILotRepository {
 	@Override
 	public Optional<LotAggregate> findById(UUID id) {
 		
-		List<BidVO> bids = jdbcTemplate.query("select * from bids where lot_id=?", this::mappingBid, id);
-		List<LotAggregate.LotAggregateBuilder> lotBuilder = jdbcTemplate.query("select * from lots  where id=?", this::mappingLot, id);
+		List<BidVO> bids = jdbcTemplate.query("select * from lots.bids where lot_id=?", this::mappingBid, id);
+		List<LotAggregate.LotAggregateBuilder> lotBuilder = jdbcTemplate.query("select * from lots.lots  where id=?", this::mappingLot, id);
 		
 		
 		return Optional.of(lotBuilder.get(0).bids(bids).build());
@@ -53,7 +53,7 @@ public class LotJdbcRepository implements ILotRepository {
 		
 		Map<UUID, LotAggregate.LotAggregateBuilder> mapLots = new HashMap<>();
 		
-		jdbcTemplate.query("select * from lots  where timeout <= now() and status='OPEN'", (row, rownum) -> {
+		jdbcTemplate.query("select * from lots.lots where timeout <= now() and status='OPEN'", (row, rownum) -> {
 			mapLots.put(UUID.fromString(row.getString("id")), mappingLot(row,rownum));
 			return null;
 		});
@@ -65,7 +65,7 @@ public class LotJdbcRepository implements ILotRepository {
 		
 		Map<UUID, List<BidVO>> mapBids = new HashMap<>();
 		
-		namedJdbcTemplate.query("select * from bids where lot_id in (:ids)", Map.of("ids", mapLots.keySet()) ,(rows, rownum) -> {
+		namedJdbcTemplate.query("select * from lots.bids where lot_id in (:ids)", Map.of("ids", mapLots.keySet()) ,(rows, rownum) -> {
 			List<BidVO> bids = mapBids.get(UUID.fromString(rows.getString("lot_id")));
 			if (bids == null) mapBids.put(UUID.fromString(rows.getString("lot_id")), new ArrayList<>(Arrays.asList(mappingBid(rows, rownum))));
 			else bids.add(mappingBid(rows, rownum));
@@ -92,7 +92,7 @@ public class LotJdbcRepository implements ILotRepository {
 	public void save(LotAggregate lot) {
 		jdbcTemplate.update(
 				"""
-			    insert into lots (
+			    insert into lots.lots (
 			        id,
 			        owner_id,
 			        timeout,
@@ -123,7 +123,7 @@ public class LotJdbcRepository implements ILotRepository {
 		
 		List<BidVO> bids = lot.getBids();
 		if(!bids.isEmpty()) {
-			jdbcTemplate.batchUpdate("insert into bids (id, buyer_id, currency, value, lot_id) values (?,?,?,?,?) on conflict(id) do nothing", bids, bids.size(),
+			jdbcTemplate.batchUpdate("insert into lots.bids (id, buyer_id, currency, value, lot_id) values (?,?,?,?,?) on conflict(id) do nothing", bids, bids.size(),
 					(ps, bid) -> {
 						ps.setObject(1, bid.id());
 						ps.setObject(2, bid.buyerId());
@@ -141,7 +141,7 @@ public class LotJdbcRepository implements ILotRepository {
 	public void save(List<LotAggregate> lots) {
 		jdbcTemplate.batchUpdate(
 				"""
-			    insert into lots (
+			    insert into lots.lots (
 			        id,
 			        owner_id,
 			        timeout,
@@ -178,7 +178,7 @@ public class LotJdbcRepository implements ILotRepository {
 				bids.add(new BidProjection(bid.id(), bid.buyerId(), bid.currency(), bid.value(), lot.getId()));
 			
 		if(!bids.isEmpty()) {
-			jdbcTemplate.batchUpdate("insert into bids (id, buyer_id, currency, value, lot_id) values (?,?,?,?,?) on conflict(id) do nothing", bids, bids.size(),
+			jdbcTemplate.batchUpdate("insert into lots.bids (id, buyer_id, currency, value, lot_id) values (?,?,?,?,?) on conflict(id) do nothing", bids, bids.size(),
 					(ps, bid) -> {
 						ps.setObject(1, bid.id());
 						ps.setObject(2, bid.buyer_id());

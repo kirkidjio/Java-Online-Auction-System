@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Data
-@Table(name="users")
+@Table(name="users", schema="users")
 public class User implements UserDetails {
 	
 	@Id
@@ -37,10 +37,10 @@ public class User implements UserDetails {
 	@Column(name = "email", unique = true, nullable = false)
 	private String email;
 	
-	@Column (name="password", unique = true)
+	@Column (name="password", nullable=false)
 	private String password;
 	
-	@Column (name="role")
+	@Column (name="role", nullable = false)
 	private String role = "ROLE_USER";
 	
 	@Override

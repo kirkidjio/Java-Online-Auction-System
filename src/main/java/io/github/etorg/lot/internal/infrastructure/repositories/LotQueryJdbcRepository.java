@@ -37,7 +37,7 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		
 		List<LotCardDto> cards = jdbcTemplate.query("""
 			
-				select id, created_at, title, min_bid, currency, timeout from lots 
+				select id, created_at, title, min_bid, currency, timeout from lots.lots 
 				where %s %s ?
 				order by %s %s limit 10
 			
@@ -55,7 +55,7 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		
 		List<LotCardDto> cards = jdbcTemplate.query("""
 			
-				select id, created_at, title, min_bid, currency, timeout from lots 
+				select id, created_at, title, min_bid, currency, timeout from lots.lots 
 				where %s %s ?
 				order by %s %s limit 10
 			
@@ -72,7 +72,7 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		
 		List<LotCardDto> cards = jdbcTemplate.query("""
 			
-				select id, created_at, title, min_bid, currency, timeout from lots 
+				select id, created_at, title, min_bid, currency, timeout from lots.lots 
 				
 				order by %s %s limit 10
 			
@@ -93,8 +93,8 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		
 		List<LotDto.Builder> lot = jdbcTemplate.query("""
 			
-				select * from lots l
-				join categories c on l.category = c.id
+				select * from lots.lots l
+				join lots.categories c on l.category = c.id
 				where l.id = ?
 				
 				
@@ -120,7 +120,7 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 	private List<BidDto> getBids(UUID lotId) {
 		List<BidDto> bids = jdbcTemplate.query("""
 				
-				select * from bids b
+				select * from lots.bids b
 				join users u on u.id = b.buyer_id
 				where b.lot_id = ?
 			

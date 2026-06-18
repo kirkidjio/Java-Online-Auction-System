@@ -40,7 +40,7 @@ public class LotRestController {
 	LotService lotService;
 	
 	@PreAuthorize("isAuthenticated()")
-	@PutMapping("/create/")
+	@PostMapping("/create/")
 	public int createLot(@RequestBody CreateLotDto form, Principal principal) {
 		lotService.createLot(UUID.fromString(principal.getName()), form);
 		return 201;
@@ -48,9 +48,8 @@ public class LotRestController {
 	
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/makebid/")
-	public int makeBid(@RequestBody MakeBidDto form, Principal principal) {
+	public void makeBid(@RequestBody MakeBidDto form, Principal principal) {
 		lotService.makeBid(UUID.fromString(principal.getName()), form);
-		return 201;
 	}
 	
 	@GetMapping("cards/")
@@ -63,15 +62,10 @@ public class LotRestController {
 		return lotService.getLot(UUID.fromString(id));
 	}
 	
-	@DeleteMapping("item/delete/{id}")
-	public void deleteLot(@PathVariable String id) {
-		lotService.deleteLot(UUID.fromString(id));
-	}
 	
-	
-	@GetMapping("/categories")
+/*	@GetMapping("/categories")
 	public List<CategoryDto> getCategories() {
 		return lotService.getCategories();
 	}
-	
+	*/
 }
