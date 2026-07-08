@@ -44,7 +44,7 @@ public class LotJdbcRepository implements ILotRepository {
 	
 	@Override
 	public void delete(UUID id) {
-		jdbcTemplate.update("delete from lots where id = ?", id);
+		jdbcTemplate.update("delete from lots.lots where id = ?", id);
 		
 	}
 	
@@ -199,7 +199,9 @@ public class LotJdbcRepository implements ILotRepository {
 				.timeout(row.getTimestamp("timeout").toLocalDateTime())
 				.minBid(row.getBigDecimal("min_bid"))
 				.state(StatusEnum.valueOf(row.getString("status")))
-				.description(row.getString("description"));
+				.description(row.getString("description"))
+				.title(row.getString("title"));
+
 	}	
 	
 	private BidVO mappingBid(ResultSet row, int rowNum) throws SQLException {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale.Category;
 import java.util.UUID;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,6 +39,7 @@ public class LotRestController {
     
 	@Autowired
 	LotService lotService;
+
 	
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/create/")
@@ -51,6 +53,7 @@ public class LotRestController {
 	public void makeBid(@RequestBody MakeBidDto form, Principal principal) {
 		lotService.makeBid(UUID.fromString(principal.getName()), form);
 	}
+
 	
 	@GetMapping("cards/")
 	public LotCardsWithCursorDto getCardsByCursor(@ModelAttribute LotCardQueryDto form) {
@@ -61,8 +64,8 @@ public class LotRestController {
 	public LotDto getLot(@PathVariable String id) {
 		return lotService.getLot(UUID.fromString(id));
 	}
-	
-	
+
+
 /*	@GetMapping("/categories")
 	public List<CategoryDto> getCategories() {
 		return lotService.getCategories();

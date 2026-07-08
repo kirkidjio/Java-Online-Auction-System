@@ -1,0 +1,23 @@
+From this point forward, any reference to users means users who are subscribed to email notifications.
+
+LOT-FR-1: Every change to a lot's status or the creation of a new bid must trigger a notification to all users who have placed bids on the lot, as well as to the lot owner.
+Each email related to a lot must include the following information:
+• Link to the lot
+• Lot title
+
+LOT-FR-2: When a lot is closed, the lot owner must receive a separate email containing the following information:
+• Winner's username
+• Final sale price of the lot
+
+The winner must receive a notification email containing:
+• Final sale price of the lot
+
+All other users who placed bids on the lot must receive a notification that the lot has been closed, including the final sale price of the lot.
+
+LOT-FR-3
+When a new bid is placed, all users who have previously placed bids on the lot (except the user who placed the new bid), as well as the lot owner, must receive an email containing the following information about the new bid:
+• Username of the user who placed the new bid
+• Bid amount
+
+LOT-FR-4
+If the auction for a lot ends in a tie, the lot owner and all users who placed bids on the lot must receive an email notifying them that there was no winner.

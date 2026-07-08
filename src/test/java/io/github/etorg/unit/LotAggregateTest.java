@@ -1,5 +1,7 @@
 package io.github.etorg.unit;
 
+import io.github.etorg.lot.internal.domain.events.LotClosedEvent;
+import io.github.etorg.lot.internal.domain.events.LotDrawedEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,8 +18,6 @@ import io.github.etorg.lot.internal.domain.LotAggregate;
 import io.github.etorg.lot.internal.domain.StatusEnum;
 import io.github.etorg.lot.internal.domain.BidVO;
 import io.github.etorg.lot.internal.domain.exceptions.DomainLotException;
-import io.github.etorg.lot.api.events.*;
-
 
 
 public class LotAggregateTest {
@@ -155,7 +155,7 @@ public class LotAggregateTest {
         lot.closeByOwner(lot.getOwnerId());
         
         assertEquals(lot.getState(), StatusEnum.CLOSED);
-        assertTrue(lot.getUpdates().contains(new LotClosedEvent(lot.getId(), maxBid.buyerId() ,"OWNER")));
+        assertTrue(lot.getUpdates().contains(new LotClosedEvent(lot.getId(), maxBid.buyerId() ,"OWNER", lot.getBids(), lot.getOwnerId(), lot.getTitle())));
     }
     
     @Test
@@ -186,7 +186,7 @@ public class LotAggregateTest {
         lot.drawByOwner(lot.getOwnerId());
         
         assertEquals(lot.getState(), StatusEnum.DRAW);
-        assertTrue(lot.getUpdates().contains(new LotDrawedEvent(lot.getId(), "OWNER")));
+        assertTrue(lot.getUpdates().contains(new LotDrawedEvent(lot.getId(), "OWNER", lot.getBids(), lot.getOwnerId(), lot.getTitle())));
     }
     
     @Test

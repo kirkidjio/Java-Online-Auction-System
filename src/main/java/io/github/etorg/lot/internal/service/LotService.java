@@ -9,6 +9,10 @@ import java.util.UUID;
 
 import javax.management.RuntimeErrorException;
 
+import io.github.etorg.lot.internal.domain.events.Event;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.etorg.lot.internal.domain.BidVO;
@@ -30,6 +34,12 @@ public class LotService {
 	
 	ILotRepository rep;
 	ILotQueryRepository repQ;
+
+	@Autowired
+	RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	DirectExchange direct;
 	
 	public LotService(ILotRepository rep, ILotQueryRepository repQ) {
 		this.rep = rep;
@@ -46,18 +56,21 @@ public class LotService {
 		BidVO bid = new BidVO(UUID.randomUUID(), userId, dto.currency(),dto.value());
 		lot.makeBid(bid);
 		rep.save(lot);
+		for(Event event: lot.getUpdates()) rabbitTemplate.convertAndSend(direct.getName(), "routing.lot.bid", event);
 	}
 	
 	public void closeByOwner(UUID userId, UUID lotId) {
 		LotAggregate lot = rep.findById(lotId).orElseThrow();
 		lot.closeByOwner(userId);
 		rep.save(lot);
+		for(Event event: lot.getUpdates()) rabbitTemplate.convertAndSend(direct.getName(), "routing.lot.closed", event);
 	}
 	
 	public void drawByOwner(UUID userId, UUID lotId) {
 		LotAggregate lot = rep.findById(lotId).orElseThrow();;
 		lot.drawByOwner(userId);
 		rep.save(lot);
+		for(Event event: lot.getUpdates()) rabbitTemplate.convertAndSend(direct.getName(), "routing.lot.drawed", event);
 	}
 	
 	public LotCardsWithCursorDto getCards(LotCardQueryDto dto) {

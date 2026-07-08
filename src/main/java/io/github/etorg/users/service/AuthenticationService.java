@@ -2,6 +2,9 @@ package io.github.etorg.users.service;
 
 import java.util.Map;
 
+import io.github.etorg.users.service.events.UserRegisteredEvent;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,6 +38,12 @@ public class AuthenticationService {
 	
 	@Autowired
 	UserRepository userRepository;
+
+	@Autowired
+	RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	DirectExchange directExchange;
 	
 	
 	
@@ -45,6 +54,9 @@ public class AuthenticationService {
 		user.setUsername(input.username());
 		
 		userRepository.save(user);
+
+		rabbitTemplate.convertAndSend(directExchange.getName(), "routing.users.notifications",
+				new UserRegisteredEvent(user.getId(), user.getUsername(), user.getEmail()));
 	}
 	
 	public Map<String, String> authenticate(AuthenticationDto input) {

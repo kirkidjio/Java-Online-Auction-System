@@ -2,9 +2,13 @@ package io.github.etorg.lot.internal.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import io.github.etorg.lot.internal.domain.events.BidMakedEvent;
+import io.github.etorg.lot.internal.domain.events.Event;
+import io.github.etorg.lot.internal.domain.events.LotClosedEvent;
+import io.github.etorg.lot.internal.domain.events.LotDrawedEvent;
 import io.github.etorg.lot.internal.domain.exceptions.DomainLotException;
 import lombok.Builder;
-import io.github.etorg.lot.api.events.*;
 
 
 import java.util.*;
@@ -68,7 +72,7 @@ public class LotAggregate {
         if (bids.isEmpty()) throw new DomainLotException("Lot cant be closed when lot havent bids");
         
         state = StatusEnum.CLOSED;
-        updates.add(new LotClosedEvent(id, Collections.max(bids).buyerId(), reason));
+        updates.add(new LotClosedEvent(id, Collections.max(bids).buyerId(), reason, bids, ownerId, title));
         
         
     }
@@ -77,7 +81,7 @@ public class LotAggregate {
         if (!state.equals(StatusEnum.OPEN)) throw new DomainLotException("Lot cant be drawed when lot status is not OPEN");
         
         state = StatusEnum.DRAW;
-        updates.add(new LotDrawedEvent(id, reason));
+        updates.add(new LotDrawedEvent(id, reason, bids, ownerId, title));
         
     }
     
@@ -111,7 +115,7 @@ public class LotAggregate {
         
         bids.add(bid);
         minBid = bid.value().multiply(BigDecimal.valueOf(1.05)); 
-        updates.add(new BidMakedEvent(id, bid.buyerId(), bid.value(), bid.currency()));
+        updates.add(new BidMakedEvent(id, ownerId, title, bids));
         
         
     	
