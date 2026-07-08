@@ -46,7 +46,7 @@ The main purpose of the project is to demonstrate backend development skills wit
 
 ## Architecture
 
-The project uses Hexagonal Architecture. The auction module is organized around a domain core, application services, ports, and adapters.
+eTorg is split into two Spring Boot services: the core auction backend and a separate Kotlin notification microservice. The core service owns users, lots, bids, and auction rules. The notification microservice listens to RabbitMQ events and sends email notifications asynchronously through an SMTP provider such as Ethereal.
 
 ```mermaid
 flowchart LR
@@ -94,17 +94,6 @@ flowchart LR
     Exchange --> ClosedQueue --> EmailSender
     Exchange --> DrawQueue --> EmailSender
 ```
-
-### Main Architectural Ideas
-
-- The domain core contains business rules and does not depend on controllers.
-- Application services coordinate use cases.
-- Repository interfaces define persistence ports.
-- JDBC repositories implement persistence adapters.
-- REST controllers expose inbound adapters for API clients.
-- RabbitMQ is used as an asynchronous messaging layer between the core service and the notification microservice.
-- The notification microservice owns email delivery and notification subscriber persistence.
-- Security is handled as an application boundary concern through Spring Security and JWT.
 
 ## Modules
 
@@ -184,16 +173,41 @@ Location: `notifications-microservice`
 
 Technology: Kotlin, Spring Boot
 
-Responsible for asynchronous notification delivery:
+The project includes a dedicated notification microservice written in Kotlin. It is separated from the core auction service so that user registration, bidding, and lot lifecycle operations do not have to send emails directly inside the main request flow.
+
+The service communicates with the core backend through RabbitMQ. The core service publishes domain events to the `lot.direct` exchange, and the notification microservice receives them from dedicated queues.
+
+Responsible for:
 
 - Receiving domain events from RabbitMQ
 - Storing email subscribers
-- Sending email notifications
+- Sending email notifications through Spring Mail
+- Using Ethereal SMTP for development email testing
 - Handling user registration events
 - Handling bid events
 - Handling lot closed events
 - Handling lot draw events
 - Managing its own Flyway migrations
+
+RabbitMQ subscriptions:
+
+- `users.notifications` receives `UserRegisteredEvent`
+- `lot.bid.notifications` receives `BidMakedEvent`
+- `lot.closed.notifications` receives `LotClosedEvent`
+- `lot.drawed.notifications` receives `LotDrawedEvent`
+
+Notification behavior:
+
+- When a user registers, `UserRegistrationListener` stores the user as an email subscriber.
+- When a bid is made, `EmailSender` notifies the lot owner and previous bidders.
+- When a lot is closed, `EmailSender` notifies the owner, winner, and other bidders.
+- When a lot is drawn/canceled, `EmailSender` notifies the owner and bidders.
+
+Persistence:
+
+- The microservice has its own Flyway migrations.
+- Notification data is stored in the `notifications` PostgreSQL schema.
+- Subscribers are stored in the `email_subscribers` table.
 
 Important classes:
 
