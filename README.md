@@ -2,6 +2,8 @@
 
 eTorg is an event-driven backend MVP for an online auction platform. The system consists of a Java Spring Boot core service and a Kotlin Spring Boot notification microservice connected through RabbitMQ.
 
+Business processes, UML diagrams, domain rules, and functional notification requirements are documented in [Business Processes and UML Diagrams](docs/BUSINESS_PROCESSES.md).
+
 The project implements user authentication, role-based user management, lot lifecycle management, bidding rules, PostgreSQL persistence, database migrations, asynchronous domain events, email notifications, and a REST API for auction operations.
 
 The main purpose of the project is to demonstrate backend development skills with Java, Kotlin, Spring Boot, Spring Security, JWT authentication, RabbitMQ, domain modeling, JDBC persistence, Flyway migrations, and Hexagonal Architecture.
