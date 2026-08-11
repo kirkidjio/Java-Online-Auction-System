@@ -12,8 +12,10 @@ import io.github.etorg.lot.internal.service.dto.LotCardDto;
 import io.github.etorg.lot.internal.service.dto.LotDto;
 
 public interface ILotQueryRepository {
-	List<LotCardDto> getSortedCards(LotAttributeSort intAtribute, Order order, BigDecimal cursor);
-	List<LotCardDto> getSortedCards(LotAttributeSort timeAtribute, Order order, LocalDateTime cursor);
+	// cursorId is the id of the last card of the previous page; together with the cursor
+	// value it forms the keyset needed to paginate without skipping or duplicating rows.
+	List<LotCardDto> getSortedCards(LotAttributeSort intAtribute, Order order, BigDecimal cursor, UUID cursorId);
+	List<LotCardDto> getSortedCards(LotAttributeSort timeAtribute, Order order, LocalDateTime cursor, UUID cursorId);
 	List<LotCardDto> getSortedCards(LotAttributeSort Atribute, Order order);
 	List<CategoryDto> getCategories();
 	

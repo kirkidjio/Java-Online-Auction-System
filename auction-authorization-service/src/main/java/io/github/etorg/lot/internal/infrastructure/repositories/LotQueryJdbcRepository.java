@@ -29,8 +29,12 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 	}
 	
 	
-	public List<LotCardDto> getSortedCards(LotAttributeSort timeAttribute, Order order, LocalDateTime cursor){
-		Map<Order, String> orderSign = Map.of(Order.DESC, "<", Order.ASC, ">");
+	public List<LotCardDto> getSortedCards(LotAttributeSort timeAttribute, Order order, LocalDateTime cursor, UUID cursorId){
+		// Inclusive operator keeps rows whose value equals the cursor value, so cards
+		// sharing the same sort value are no longer skipped between pages.
+		Map<Order, String> inclusiveSign = Map.of(Order.DESC, "<=", Order.ASC, ">=");
+		// Strict operator separates rows strictly before/after the cursor value.
+		Map<Order, String> strictSign = Map.of(Order.DESC, "<", Order.ASC, ">");
 		Set<LotAttributeSort> acceptableColumns = Set.of(LotAttributeSort.CREATED_AT, LotAttributeSort.TIMEOUT);
 		
 		if (!acceptableColumns.contains(timeAttribute)) throw new RuntimeException("bad value for timeatribute");
@@ -38,17 +42,25 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		List<LotCardDto> cards = jdbcTemplate.query("""
 			
 				select id, created_at, title, min_bid, currency, timeout from lots.lots 
-				where %s %s ?
-				order by %s %s limit 10
+				where %s %s ? and (%s %s ? or id %s ?)
+				order by %s %s, id %s limit 10
 			
 				
-				""".formatted(timeAttribute.name(), orderSign.get(order), timeAttribute.name(), order.name()), this::mappingCard, Timestamp.valueOf(cursor));
+				""".formatted(
+				timeAttribute.name(), inclusiveSign.get(order),
+				timeAttribute.name(), strictSign.get(order), strictSign.get(order),
+				timeAttribute.name(), order.name(), order.name()),
+				this::mappingCard, Timestamp.valueOf(cursor), Timestamp.valueOf(cursor), cursorId);
 		return cards;
 	}
 	
 	
-	public List<LotCardDto> getSortedCards(LotAttributeSort intAttribute, Order order, BigDecimal cursor){
-		Map<Order, String> orderSign = Map.of(Order.DESC, "<", Order.ASC, ">");
+	public List<LotCardDto> getSortedCards(LotAttributeSort intAttribute, Order order, BigDecimal cursor, UUID cursorId){
+		// The id tie-breaker condition prevents duplicates when more than one page
+		// worth of cards shares the same sort value: only rows with a smaller id
+		// (for DESC) are taken from that value group.
+		Map<Order, String> inclusiveSign = Map.of(Order.DESC, "<=", Order.ASC, ">=");
+		Map<Order, String> strictSign = Map.of(Order.DESC, "<", Order.ASC, ">");
 		Set<LotAttributeSort> acceptableColumns = Set.of(LotAttributeSort.MIN_BID);
 		
 		if (!acceptableColumns.contains(intAttribute)) throw new RuntimeException("bad value for decimal atribute");
@@ -56,28 +68,34 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		List<LotCardDto> cards = jdbcTemplate.query("""
 			
 				select id, created_at, title, min_bid, currency, timeout from lots.lots 
-				where %s %s ?
-				order by %s %s limit 10
+				where %s %s ? and (%s %s ? or id %s ?)
+				order by %s %s, id %s limit 10
 			
 				
-				""".formatted(intAttribute.name(), orderSign.get(order), intAttribute.name(), order.name()), this::mappingCard, cursor);
+				""".formatted(
+				intAttribute.name(), inclusiveSign.get(order),
+				intAttribute.name(), strictSign.get(order), strictSign.get(order),
+				intAttribute.name(), order.name(), order.name()),
+				this::mappingCard, cursor, cursor, cursorId);
 		return cards;
 	}
 	
 	
-	public List<LotCardDto> getSortedCards(LotAttributeSort intAttribute, Order order){
-		Set<LotAttributeSort> acceptableColumns = Set.of(LotAttributeSort.MIN_BID);
+	public List<LotCardDto> getSortedCards(LotAttributeSort attribute, Order order){
+		// The id is added to the order by clause so that the very first page uses the
+		// same deterministic ordering as all subsequent cursor-based pages.
+		Set<LotAttributeSort> acceptableColumns = Set.of(LotAttributeSort.MIN_BID, LotAttributeSort.TIMEOUT, LotAttributeSort.CREATED_AT);
 		
-		if (!acceptableColumns.contains(intAttribute)) throw new RuntimeException("bad value for decimal atribute");
+		if (!acceptableColumns.contains(attribute)) throw new RuntimeException("bad value for decimal atribute");
 		
 		List<LotCardDto> cards = jdbcTemplate.query("""
 			
 				select id, created_at, title, min_bid, currency, timeout from lots.lots 
 				
-				order by %s %s limit 10
+				order by %s %s, id %s limit 10
 			
 				
-				""".formatted(intAttribute.name(), order.name()), this::mappingCard);
+				""".formatted(attribute.name(), order.name(), order.name()), this::mappingCard);
 		return cards;
 	}
 	
@@ -94,7 +112,7 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		List<LotDto.Builder> lot = jdbcTemplate.query("""
 			
 				select * from lots.lots l
-				join lots.categories c on l.category = c.id
+				
 				where l.id = ?
 				
 				
@@ -102,9 +120,10 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 		
 		return lot.get(0).bids(bids).build();
 	}
-	
+
+
 	public List<CategoryDto> getCategories() {
-		
+		/*
 		List<CategoryDto> categories = jdbcTemplate.query("""
 			
 				select * from categories
@@ -113,8 +132,11 @@ public class LotQueryJdbcRepository implements ILotQueryRepository {
 				""", this::mappingCategory);
 		
 		return categories;
+
+		 */
+		throw new RuntimeException("Not implemented");
 	}
-	
+
 	
 	
 	private List<BidDto> getBids(UUID lotId) {
