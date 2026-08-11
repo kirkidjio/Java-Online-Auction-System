@@ -32,7 +32,7 @@ if ($LASTEXITCODE -eq 0 -and (Test-Path $OUTPUT_FILE)) {
 
     # 3. Перезаписываем файл в чистом UTF-8
     $cleanContent | Set-Content $OUTPUT_FILE -Encoding UTF8
-    Write-Host "Sukces dump" -ForegroundColor Green
+    Write-Host "Saved in $OUTPUT_FILE" -ForegroundColor Green
 } else {
     Write-Host "Failed dump" -ForegroundColor Red
 }
