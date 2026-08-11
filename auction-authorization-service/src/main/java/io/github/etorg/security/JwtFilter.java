@@ -1,16 +1,14 @@
-package io.github.etorg.users.security;
+package io.github.etorg.security;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			final UUID userId = jwtService.getUserId(jwt);
 			
 			if (userId != null) {
-				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userId, null, List.of());
+				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userId, null, List.of());		// todo insert role from db in token
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 			}
 			filterChain.doFilter(request, response);

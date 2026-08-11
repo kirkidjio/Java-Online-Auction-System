@@ -1,4 +1,4 @@
-package io.github.etorg.users.security;
+package io.github.etorg.security;
 
 import java.security.Key;
 import java.util.Date;
