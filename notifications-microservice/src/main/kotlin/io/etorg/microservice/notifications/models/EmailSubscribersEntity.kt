@@ -1,4 +1,4 @@
-package io.etorg.microservice.notifications
+package io.etorg.microservice.notifications.models
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -8,14 +8,13 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.util.UUID
 
-
 @Entity
 @Table(name = "email_subscribers", schema = "notifications")
 class EmailSubscribersEntity (
 
     @Id
     @GeneratedValue(GenerationType.UUID)
-    var id:UUID? = null,
+    var id: UUID? = null,
 
     @Column(name="user_id", unique = true, nullable = false)
     var userId: UUID,

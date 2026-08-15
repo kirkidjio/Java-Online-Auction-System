@@ -28,7 +28,7 @@ public class UsersSecurityConfig {
         return http
                 .securityMatcher("/api/users/**", "/api/admin/**", "/signup", "/signin")
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/authentication/signup", "/api/users/authentication/signin", "/signup", "/signin").permitAll()
+                        .requestMatchers("/api/users/authentication/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .authenticationProvider(authProvider)

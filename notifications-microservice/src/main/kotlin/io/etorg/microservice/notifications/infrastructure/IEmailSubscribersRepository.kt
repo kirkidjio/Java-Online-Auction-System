@@ -1,5 +1,6 @@
-package io.etorg.microservice.notifications
+package io.etorg.microservice.notifications.infrastructure
 
+import io.etorg.microservice.notifications.models.EmailSubscribersEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

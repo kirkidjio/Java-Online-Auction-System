@@ -1,4 +1,4 @@
-package io.etorg.microservice.notifications.events
+package io.etorg.microservice.notifications.service.lots.events
 
 import java.util.*
 

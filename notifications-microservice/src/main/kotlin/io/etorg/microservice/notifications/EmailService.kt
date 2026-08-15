@@ -1,7 +1,7 @@
 package io.etorg.microservice.notifications
 
+import io.etorg.microservice.notifications.infrastructure.IEmailSubscribersRepository
 import org.springframework.stereotype.Service
-import java.util.UUID
 
 @Service
 class EmailService (val rep: IEmailSubscribersRepository) {
