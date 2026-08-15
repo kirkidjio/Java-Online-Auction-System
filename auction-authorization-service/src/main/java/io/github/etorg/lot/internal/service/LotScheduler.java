@@ -9,6 +9,7 @@ import io.github.etorg.lot.internal.domain.exceptions.DomainLotException;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,7 @@ public class LotScheduler {
 
 	@Autowired
 	RabbitTemplate rabbitTemplate;
+
 
 	@Autowired
 	DirectExchange direct;

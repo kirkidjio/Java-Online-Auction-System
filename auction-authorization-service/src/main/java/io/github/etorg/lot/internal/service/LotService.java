@@ -13,6 +13,7 @@ import io.github.etorg.lot.internal.domain.events.Event;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import io.github.etorg.lot.internal.domain.BidVO;
@@ -38,6 +39,7 @@ public class LotService {
 	@Autowired
 	RabbitTemplate rabbitTemplate;
 
+	@Qualifier("lotExchange")
 	@Autowired
 	DirectExchange direct;
 	

@@ -3,10 +3,8 @@ package io.github.etorg.users.api;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import io.github.etorg.users.service.AuthenticationService;
 import io.github.etorg.users.service.dto.AuthenticationDto;
@@ -32,6 +30,12 @@ public class AuthController {
 		return authService.authenticate(form);
 	}
 	
-	
+	@GetMapping({"/confirm-registration/{token}"})
+	public ResponseEntity<Map<String, String>> confirmRegistration(@PathVariable String token){
+		if (authService.confirmRegistration(token))
+			return ResponseEntity.ok(Map.of("status", "success", "message", "Email confirmed"));
+
+		return ResponseEntity.notFound().build();
+	}
 	
 }

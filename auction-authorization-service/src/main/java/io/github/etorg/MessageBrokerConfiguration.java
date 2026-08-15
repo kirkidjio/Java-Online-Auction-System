@@ -1,8 +1,6 @@
-package io.github.etorg.lot.internal;
+package io.github.etorg;
 
 import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -19,8 +17,8 @@ public class MessageBrokerConfiguration {
     }
 
     @Bean
-    DirectExchange exchange() {
-        return new DirectExchange("lot.direct");
+    DirectExchange lotExchange() {
+        return new DirectExchange("auction.direct");
     }
 
 }
